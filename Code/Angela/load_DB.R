@@ -15,9 +15,10 @@ load(paste0(path,"Code/Angela/Data/db.RData"))
 #Define Clusters 
 Cl1 <- c("KOR", "SGP")
 Cl2 <- c("DEU", "SWE")
-Cl3 <- c("CAN", "GRC", "PRT","USA")
+Cl3 <- c("CAN", "USA","GRC", "PRT")
 Cl4 <- c("ESP", "GBR", "IRL", "ITA", "NLD")
 Cl5 <- c("AUT", "BEL", "CHE", "DNK", "FIN", "FRA", "NOR")
+
 states_to_sel <- c(Cl1,Cl2,Cl3,Cl4,Cl5)
 
 ############################Some preprocessing steps ############################
@@ -28,8 +29,7 @@ dat <- dat %>% filter(id %in% states_to_sel)
 dat$Clusters <- ifelse(dat$id %in% Cl1, "Cl1", 
                         ifelse(dat$id %in% Cl2, "Cl2", 
                                ifelse(dat$id %in% Cl3, "Cl3", 
-                                      ifelse(dat$id %in% Cl4, "Cl4", 
-                                             "Cl5"))))
+                                      ifelse(dat$id %in% Cl4, "Cl4","Cl5"))))
 dat$Clusters <- factor(dat$Clusters)
 
 #Aligned data by first confirmed case

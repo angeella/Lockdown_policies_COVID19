@@ -20,10 +20,12 @@ bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
-path <- "~/GitHub/Statistical_Consulting/" #Insert your path
+rm(list=ls())
+path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
 knitr::opts_chunk$set(echo = TRUE)
-source(paste0(path, "Angela/packages.R"))
+source(paste0(path, "Code/Angela/packages.R"))
 load(paste0(path, "Presentation/Data/out.RData"))
+load("~/GitHub/Lockdown_policies_COVID19/Code/Angela/Data/var.RData")
 ```
 
 # Introduction 
@@ -60,7 +62,7 @@ The daily number of active person is analyzed as measure of COVID-19 situation. 
 So, the aim is to understand how the lockdown policies influences the contagions. We consider the aligned data respect to the first confirmed case, we have the following situation:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p1 <- ggplot(dat_shape, aes(x = date, y = active, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Date") + xlab("Confirmed")
+p1 <- ggplot(dat, aes(x = date, y = active, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Date") + xlab("Active")
 
 div(ggplotly(p1), align = "center")
 ```
@@ -73,7 +75,7 @@ The set of covariates considered in this analysis can be divided into three main
 
   1. Longitudinal economic variables;
 
-  2. Longitudinal health vystem variables;
+  2. Longitudinal health system variables;
   
   3. Fixed demographic/economic/health variables.
   
@@ -86,10 +88,9 @@ knitr::kable(tab_EC)
 ```
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p2 <- dat_shape %>% ggplot(aes(x=date, y=ox.E1_Income.support, group=Clusters, color=Clusters)) +
-  geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Income Support") + xlab("Date")
+p2 <- dat %>% ggplot(aes(x=date, y=E1_Income_support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Income Support") + xlab("Date")
 
-p3 <- dat_shape %>% ggplot(aes(x=date, y=ox.E2_Debt.contract.relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + theme(title = element_blank()) + scale_x_date(date_labels = "%b %d") + ylab("Debt Contract Relief") + xlab("Date")
+p3 <- dat %>% ggplot(aes(x=date, y=E2_Debt_contract_relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + scale_x_date(date_labels = "%b %d") + ylab("Debt Contract Relief") + xlab("Date")
 
 p2 <- ggplotly(p2, tooltip = c("x", "y", "Clusters"))
 p2$x$data[[1]]$showlegend <- FALSE
@@ -97,38 +98,39 @@ p2$x$data[[2]]$showlegend <- FALSE
 p2$x$data[[3]]$showlegend <- FALSE
 p2$x$data[[4]]$showlegend <- FALSE
 p2$x$data[[5]]$showlegend <- FALSE
+
 p2 <- hide_legend(p2)
 p3 <- ggplotly(p3, tooltip = c("x", "y", "Clusters"))
-div(subplot(p2,p3), align = "center")
+div(subplot(p2,p3,shareY = F), align = "center")
 ```
 
 We will combine these two first economic variables into one continous variables using the Polychoric Principal Component Analysis, in order to diminuish the number of covariates inside the model, having $9$ ordinal policies lockdown covariates. 
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-pca_EC <- polychoric(dat_shape[,var_EC[1:2]])
+quiet(pca_EC <- polychoric(dat[,var_EC[1:2]]),all = T)
 matPCA_ec <- cbind(rep(0,2),pca_EC$tau)
-dat_shape$ox.E1_Income.support_f <- as.factor(dat_shape$ox.E1_Income.support)
-dat_shape$ox.E1_Income.support_f <- recode_factor(dat_shape$ox.E1_Income.support_f,
+dat$E1_Income_support_f <- as.factor(dat$E1_Income_support)
+dat$E1_Income_support_f <- recode_factor(dat$E1_Income_support_f,
                                                   "0" = paste0(matPCA_ec[1,1]),
                                                   "1" = paste0(matPCA_ec[1,2]),
                                                   "2" = paste0(matPCA_ec[1,3]))
 
-dat_shape$ox.E1_Income.support_f <- as.numeric(dat_shape$ox.E1_Income.support_f)
-dat_shape$ox.E2_Debt.contract.relief_f <- as.factor(dat_shape$ox.E2_Debt.contract.relief)
-dat_shape$ox.E2_Debt.contract.relief_f <- recode_factor(dat_shape$ox.E2_Debt.contract.relief_f,
+dat$E1_Income_support_f <- as.numeric(dat$E1_Income_support_f)
+dat$E2_Debt_contract_relief_f <- as.factor(dat$E2_Debt_contract_relief)
+dat$E2_Debt_contract_relief_f <- recode_factor(dat$E2_Debt_contract_relief_f,
                                                         "0" = paste0(matPCA_ec[2,1]),
                                                         "1" = paste0(matPCA_ec[2,2]),
                                                         "2" = paste0(matPCA_ec[2,3]))
-dat_shape$ox.E2_Debt.contract.relief_f <- as.numeric(dat_shape$ox.E2_Debt.contract.relief_f)
+dat$E2_Debt_contract_relief_f <- as.numeric(dat$E2_Debt_contract_relief_f)
 ```
 
 Therefore, the two economic variables in USD are examined and transformed in logarithmic scale in order to de-emphasizes very large values.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p2 <- dat_shape %>% ggplot(aes(x=date, y=ox.E3_Fiscal.measures, group=Clusters, color=Clusters)) +
+p2 <- dat %>% ggplot(aes(x=date, y=E3_Fiscal_measures, group=Clusters, color=Clusters)) +
   geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Fiscal Measures") + xlab("Date")
 
-p3 <- dat_shape %>% ggplot(aes(x=date, y=ox.E4_International.support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + theme(title = element_blank()) + scale_x_date(date_labels = "%b %d") + ylab("International Support") + xlab("Date")
+p3 <- dat %>% ggplot(aes(x=date, y=E4_International_support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + theme(title = element_blank()) + scale_x_date(date_labels = "%b %d") + ylab("International Support") + xlab("Date")
 
 p2 <- ggplotly(p2, tooltip = c("x", "y", "Clusters"))
 p2$x$data[[1]]$showlegend <- FALSE
@@ -141,160 +143,187 @@ p3 <- ggplotly(p3, tooltip = c("x", "y", "Clusters"))
 div(subplot(p2,p3), align = "center")
 
 #Log transformation
-dat_shape$ox.E3_Fiscal.measures_log <- log(dat_shape$ox.E3_Fiscal.measures +1)
-dat_shape$ox.E4_International.support <- ifelse(is.na(dat$ox.E4_International.support), 0, dat_shape$ox.E4_International.support)
-dat_shape$ox.E4_International.support_log <- log(dat_shape$ox.E4_International.support +1)
+dat$E3_Fiscal_measures_log <- log(dat$E3_Fiscal_measures +1)
+dat$E4_International_support <- ifelse(is.na(dat$E4_International_support), 0, dat$E4_International_support)
+dat$E4_International_support_log <- log(dat$E4_International_support +1)
 ```
 
-For further details about the definition of the economic variables, please see
+For further details about the definition of the economic variables, please see the [BSG Working Paper Series](https://www.bsg.ox.ac.uk/sites/default/files/2020-05/BSG-WP-2020-032-v5.0_0.pdf)
 
 ### Demographic/Fixed variables
 
+We analyze various variables from the [World Bank Open Data](https://data.worldbank.org/) that are fixed along the temporal dimension:
+
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p <- ggplot(dat_shape, aes(x=Clusters, y=log(pop), fill=Clusters)) + geom_boxplot() 
+tab_FIX <- data.frame(Name = c("Population", "Population ages 65 and above (% of total population)", "Population density (people per sq. km of land area)", "Hospital beds (per 1,000 people)", "Death rate, crude (per 1,000 people)", "GDP growth (annual %)", "Urban population (% of total population)", "Surface area (sq. km)"), Measurement = c("Numeric", "Numeric", "Numeric", "Numeric","Numeric", "Numeric", "Numeric", "Numeric"))
+knitr::kable(tab_FIX)
+```
 
-ggplotly(p)
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+p1 <- ggplot(dat, aes(x=Clusters, y=log(pop), fill=Clusters)) + geom_boxplot() + ylab("Population in log scale") +
+  theme(legend.position = "none")
+p2 <- ggplot(dat, aes(x=Clusters, y=pop_65, fill=Clusters)) + geom_boxplot() + theme(legend.position = "none") + ylab("Population ages 65 and above per 1000")
 
+p3 <- ggplot(dat, aes(x=Clusters, y=pop_density, fill=Clusters)) + geom_boxplot() + theme(legend.position = "none") + ylab("Population density per sq.km")
+
+p1 <- ggplotly(p1)
+p2 <- ggplotly(p2)
+p3 <- ggplotly(p3)
+div(subplot(p1,p2,p3), align = "center")
+```
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+p1 <- ggplot(dat, aes(x=Clusters, y=hosp_beds, fill=Clusters)) + geom_boxplot() + ylab("Hospital beds per 1000") +
+  theme(legend.position = "none")
+p2 <- ggplot(dat, aes(x=Clusters, y=pop_death_rate, fill=Clusters)) + geom_boxplot() + theme(legend.position = "none") + ylab("Death rate per 1000")
+
+p3 <- ggplot(dat, aes(x=Clusters, y=gdp, fill=Clusters)) + geom_boxplot() + theme(legend.position = "none") + ylab("GDP per 100")
+
+p1 <- ggplotly(p1)
+p2 <- ggplotly(p2)
+p3 <- ggplotly(p3)
+div(subplot(p1,p2,p3), align = "center")
+```
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+p1 <- ggplot(dat, aes(x=Clusters, y=pop_urban, fill=Clusters)) + geom_boxplot() + ylab("Urban population") +
+  theme(legend.position = "none")
+p2 <- ggplot(dat, aes(x=Clusters, y=surface_area, fill=Clusters)) + geom_boxplot() + theme(legend.position = "none") + ylab("Surface area in sq. km")
+
+p1 <- ggplotly(p1)
+p2 <- ggplotly(p2)
+div(subplot(p1,p2), align = "center")
 ```
 
 ### Health variables
 
+We analyze two heatlh systems variables.
+
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-tab_H <- data.frame(Name = c("Emergency Investment in healthcare", "Investment in vaccines"), Measurement = c("USD", "USD"), Description = c("Short-term spending on, e.g, hospitals, masks, etc ", "Announced public
-spending on vaccine development") )
+tab_H <- data.frame(Name = c("Emergency Investment in healthcare", "Investment in vaccines"), Measurement = c("USD", "USD"), Description = c("Short-term spending on, e.g, hospitals, masks, etc ", "Announced public spending on vaccine development") )
 knitr::kable(tab_H)
 ```
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p <- dat_shape %>% ggplot(aes(x=date2, y=ox.H4_Emergency.investment.in.healthcare, group=Clusters, color=Clusters)) +
-  geom_smooth() 
+p1 <- dat %>% ggplot(aes(x=date, y=H4_Emergency_investment_in_healthcare, group=Clusters, color=Clusters))  +
+  geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Emergency investment in healthcare") + xlab("Date")
+p2 <- dat %>% ggplot(aes(x=date, y=H5_Investment_in_vaccines, group=Clusters, color=Clusters))  +  geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Investment in vaccines") + xlab("Date")
 
-ggplotly(p)
+p1 <- ggplotly(p1)
+p2 <- ggplotly(p2)
+div(subplot(p1,p2), align = "center")
+```
+
+Also in this case, we transform the set of healthy variables into one continous variable using the Polycorin Principal Component Analysis.
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+pca_hs <- princomp(na.omit(dat[,var_HS]), cor = TRUE)
+dat$pca_hs <- predict(pca_hs,newdata = dat[,var_HS])[,1]
 ```
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p <- dat_shape %>% ggplot(aes(x=date2, y=ox.H5_Investment.in.vaccines, group=Clusters, color=Clusters)) +
-  geom_smooth() 
+p1 <- dat %>% ggplot(aes(x=date, y=pca_hs, group=Clusters, color=Clusters))  +
+  geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Health Investment variable (PCA)") + xlab("Date")
 
-ggplotly(p)
+p1 <- ggplotly(p1)
+div(p1, align = "center")
 ```
-
-pca.
-
 
 ## Model
 
-The data are observed for each country nested within date. 
+The data are observed for each country nested within date. We are considering also the Clusters variable, therefore we have three level structure of the data. Therefore, the variability of the data comes from nested sources: countries are nested within clusters where the measures of the observations are repeated across time, i.e., longitudinal data.
 
-- Two-level model: the units of analysis (Level 1), countries, are nested within clusters (Level 2), date;
+For that, the mixed model approach is considered in order to exploit the different type of variability coming from the hierarchical structure of our data. Firstly, the Intraclass correlation coefficient (ICC) is computed:
 
-- The variability of the data comes from nested sources;
+$$
+ICC_{date; active} = 0.0936 \quad ICC_{Countries; Active} = 0.4015 \quad ICC_{Clusters; Active} = 0.0951 
+$$
 
-- The Intraclass Correlation Coefficient (ICC) is equal to $0.3910876$ for date, equals $0.04668614$ for id and $ 0.02533497$ for Clusters.
+```{r, echo = FALSE, warning= F, comment= F}
+#ICCest(date2, active, dat) 
+#ICCest(id, active, dat) 
+#ICCest(Clusters, active, dat)
+```
 
-lot to understand the variability respect date
+Therefore, the $40.15\%$ of the variance of the data is given by the random effect of the countries, while the $9.36\%$ by the temporal effect and $9.51\%$ by the clusters effect. Therefore, the mixed model will impose of sure a random effect for the countries, the other two effects will be selected using the conditional AIC
 
-```{r, echo = FALSE, comment = F, warning= F, silent = T}
-abc<-aggregate(active ~id, dat_shape, mean)
-bdata <- dat_shape
+```{r, echo = FALSE, comment = F, warning= F, silent = T, fig.align="center"}
+abc<-aggregate(active ~id, dat, mean)
+bdata <- dat
 bdata <- merge(bdata,abc,by="id")
 bdata$colorBox <- ifelse(bdata$active.y>= mean(na.omit(bdata$active.x)), "#56B4E9", "#009E73")
 
 bdata$id <- as.factor(bdata$id)
-ggplot(bdata, aes(x=id, y=active.x, fill = colorBox)) +
-    geom_boxplot() +
-  scale_color_manual(values=rainbow(6))+ theme(legend.position="none")
+ggplot(bdata, aes(x=id, y=log(active.x + 1), fill = colorBox)) +
+    geom_boxplot() + ylab("log(active)") + xlab("Countries") + scale_fill_discrete(labels=c("< global Mean","> global Mean"),
+                    name="Active Mean")
 ```
 
-and respect Clusters:
+The random effects are used to model multiple sources of variations and subject-specific effects, and thus avoid biased inference on the fixed effects. The dependent variable is the cumulated number of active person, therefore a count data model is considered. In order to control the overdispersion of our data, i.e., the conditional variance exceeds the conditional mean, the negative binomial regression with Gaussian-distributed random effects is used. Let $n$ countries, and country $i$ is measured at $n_i$ time points $t_{ij}$. The active person $y_{ij}$ count at time $t+14$, where $i=1,\dots, n$ and $j = 1, \dots,n_i$, follows the negative binomial distribution:
+  
+$$y_{ij} \sim NB(y_{ij}|\mu_{ij}, \theta) = \dfrac{\Gamma(y_{ij}+ \theta)}{\Gamma(\theta) y_{ij}!} \cdot \Big(\dfrac{\theta}{\mu_{ij} + \theta}\Big)^{\theta}\cdot \Big(\dfrac{\mu_{ij}}{\mu_{ij} + \theta}\Big)^{y_{ij}}$$
+where $\theta$ is the dispersion parameter that controls the amount of overdispersion, and $\mu_{ij}$ are the means. The means $\mu_{ij}$ are related to the host variables via the logarithm link function:
 
-```{r, echo = FALSE, comment = F, warning= F, silent = T}
-abc<-aggregate(active ~Clusters, dat_shape, mean)
-bdata <- dat_shape
-bdata <- merge(bdata,abc,by="Clusters")
-bdata$colorBox <- ifelse(bdata$active.y>= mean(na.omit(bdata$active.x)), "#56B4E9", "#009E73")
+$$\log(\mu_{ij}) = \log(T_{ij}) + X_{ij} \beta + Z_{ij} b_i \quad b_i \sim \mathcal{N}(0,\psi)$$
+      
+where $\log(T_{ij})$ is the offset that corrects for the variation of the count of the active person at time $t$. $\text{E}(y_{ij}) = \mu$ and $\text{Var}(y_{ij}) = \mu (1 + \mu\phi)$ from @Hardin.
 
-bdata$Clusters <- as.factor(bdata$Clusters)
-ggplot(bdata, aes(x=Clusters, y=active.x, fill = colorBox)) +
-    geom_boxplot() +
-  scale_color_manual(values=rainbow(6))+ theme(legend.position="none")
-```
+After some covariates selection steps and random effects selection, the final model is expressed as:
 
-and id:
-
-```{r, echo = FALSE, comment = F, warning= F, silent = T}
-abc<-aggregate(active ~date2, dat_shape, mean)
-bdata <- dat_shape
-bdata <- merge(bdata,abc,by="date2")
-bdata$colorBox <- ifelse(bdata$active.y>= mean(na.omit(bdata$active.x)), "#56B4E9", "#009E73")
-
-bdata$date2 <- as.factor(bdata$date2)
-ggplot(bdata, aes(x=date2, y=active.x, fill = colorBox)) +
-    geom_boxplot() +
-  scale_color_manual(values=rainbow(6))+ theme(legend.position="none")
-```
-
-**How to choose the random and fixed part?**
-
-The problem is much more complicated than in linear regression because selection on the covariance structure is not straightforward due to computational issues and boundary problems arising from positive semidefinite constraints on covariance matrices.
-
--Conditional AIC (Package cAIC4): The conditional AIC is also appropriate for choosing between a simple null model without any random effects and a complex model incorporating random effects,
-
--Boostrap (R Package pbkrtest): Model comparison of nested models using parametric bootstrap methods. Implemented for some commonly applied model types.
-
-Finally the model is:
-
-```{r, echo = FALSE, comment = F, warning= F, silent = T}
+```{r}
 summary(mod1)
 ```
 
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-a <- ggplot(dat_shape, aes(x = date, y = active/1000, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula = 'y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Active per 1000") + xlab("Date") 
+```{r,echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+out0 <- as.data.frame(ggeffect(mod1, terms = "workplace_closingF"))
+out0$Value <- c("No measures", "Recommend closing or work from home", "require closing for some sector" ,"Require closing all-but-essential workplaces")
+out1 <-as.data.frame(ggeffect(mod1, terms = "gatherings_restrictionsF"))
+out1$Value <- c("No measures", "> 1000", "100-1000 people", "10-100 people", "< 10 people")
+out2 <- as.data.frame(ggeffect(mod1, terms = "transport_closingF"))[c(1,3),]
+out2$Value <- c("No measures", "Require closing")
+out3 <- as.data.frame(ggeffect(mod1, terms = "stay_home_restrictionsF"))[c(1,4),]
+out3$Value <- c("No measures", "Minimal exceptions")
+out4 <- as.data.frame(ggeffect(mod1, terms = "testing_policyF"))
+out4$Value <- c("No measures", "Specific criteria", "Symptoms", "Open")
+out5 <- as.data.frame(ggeffect(mod1, terms = "contact_tracingF"))
+out5$Value <- c("No measures", "Limited", "Comprehensive")
 
-ggplotly(a)
-```
-
-```{r,echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-out0 <- ggeffect(mod1, terms = "school_closingF")[c(1,3),]
-out1 <- ggeffect(mod1, terms = "gatherings_restrictionsF")[c(1,3),]
-out2 <- ggeffect(mod1, terms = "transport_closingF")[c(1,2),]
-out3 <- ggeffect(mod1, terms = "stay_home_restrictionsF")[c(1,4),]
-out4 <- ggeffect(mod1, terms = "internal_movement_restrictionsF")[c(1,2),]
-out5 <- ggeffect(mod1, terms = "testing_policyF")
-out6 <- ggeffect(mod1, terms = "contact_tracingF")
-
-OUT <- rbind(out0, out1, out2, out3, out4, out5, out6)
-OUT$Policies <- c(rep("School Closing", nrow(out0)),
+OUT <- rbind(out0, out1, out2, out3, out4, out5)
+OUT$Policies <- c(rep("Workplace Closing", nrow(out0)),
                   rep("No Gathering", nrow(out1)),
                   rep("No Transport", nrow(out2)),  
                   rep("Stay Home", nrow(out3)),
-                  rep("No Movement", nrow(out4)),  
-                  rep("Testing", nrow(out5)),
-                  rep("Tracing", nrow(out6)))
+                  rep("Testing", nrow(out4)),
+                  rep("Tracing", nrow(out5)))
 
 colnames(OUT)[1] <- "Strength"
-Value <- c("No measures",  "Require closing",
-           "No measures",  "< 10 people",
-           "No measures", "Recommend closing",
-           "No measures", "Minimal exceptions",
-           "No measures", "Recommend closing", 
-           "No measures", "Specific criteria", "Symptoms", "Open", "No measures", "Limited", "Comprehensive")
 
 #OUT$cols <- c("slateblue1", "slateblue2", "slateblue3", "slateblue4")
 
 ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
   geom_bar(stat = "summary", fun = "mean", 
            position = position_dodge(width = 0.9)) +
-  scale_y_continuous(name = "Daily Mean Active People", limits = c(0, 1700))+ geom_errorbar(stat = "summary", fun.data = "mean_sdl", 
+  scale_y_continuous(name = "Predicted counts of Active People after 14 days", limits = c(0, 1700))+ geom_errorbar(stat = "summary", fun.data = "mean_sdl", 
                 fun.args = list(mult = 2),
                 position =  position_dodge(width =1)) +
-  geom_text(aes(label=Value, group = Strength),     hjust = -0.2, size = 3,
+  geom_text(aes(label=Value, group = Strength),     hjust = -0.1, size = 3,
             position = position_dodge(width = 1),
             inherit.aes = TRUE)  + coord_flip() + scale_fill_viridis(discrete=T) +
   theme_minimal() + ylab("") 
 ```
 
-```{r echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+eff <- ggeffect(mod1, terms = c("workplace_closingF", "gatherings_restrictionsF", "stay_home_restrictionsF", "transport_closingF"))
+div(plot(eff), align = "center")
+```
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+eff <- ggeffect(mod1, terms = c("testing_policyF", "contact_tracingF"))
+div(plot(eff), align = "center")
+```
+
+
+```{r echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
 load(paste0(path, "Presentation/Data/plot_map.RData"))
 grid.arrange(na2, europe2,                 
              arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
@@ -304,21 +333,17 @@ grid.arrange(na2, europe2,
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
 load(paste0(path, "Presentation/Data/plot_mod.RData"))
 
-subplot(ggplotly(p1, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = ""),
+div(subplot(ggplotly(p1, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = ""),
  ggplotly(p2, tooltip = c("colour", "y"))%>% layout(showlegend = FALSE,title = ""), 
-ggplotly(p3, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "Stay Home           Testing            Tracing"), shareY = T
-) 
+ggplotly(p3, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "Gatherings           Testing            Tracing"), shareY = T
+), align = "center") 
 ```
 
 # Italian lockdown and regional outcomes
 
-
-# Effect of policies from a global perspective
-
-
 # Supplementary materials
 
-All the codes used for this analysis is available on [Github](https://github.com/angeella/Statistical_Consulting).
+All the codes used for this analysis is available on [Github](https://github.com/angeella/Lockdown_policies_COVID19).
 
 
 
