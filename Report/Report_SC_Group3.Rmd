@@ -25,7 +25,7 @@ path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
 knitr::opts_chunk$set(echo = TRUE)
 source(paste0(path, "Code/Angela/packages.R"))
 load(paste0(path, "Presentation/Data/out.RData"))
-load(paste0(path, "Code/Angela/Data/var.RData"))
+load("~/GitHub/Lockdown_policies_COVID19/Code/Angela/Data/var.RData")
 ```
 
 # Introduction 
@@ -115,7 +115,7 @@ dat$E1_Income_support_f <- recode_factor(dat$E1_Income_support_f,
                                                   "1" = paste0(matPCA_ec[1,2]),
                                                   "2" = paste0(matPCA_ec[1,3]))
 
-dat$E1_Income_support_f <- as.numeric(dat$E1_Income.support_f)
+dat$E1_Income_support_f <- as.numeric(dat$E1_Income_support_f)
 dat$E2_Debt_contract_relief_f <- as.factor(dat$E2_Debt_contract_relief)
 dat$E2_Debt_contract_relief_f <- recode_factor(dat$E2_Debt_contract_relief_f,
                                                         "0" = paste0(matPCA_ec[2,1]),
