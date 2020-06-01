@@ -20,10 +20,12 @@ bibliography: references.bib
 ---
 
 ```{r setup, include=FALSE}
-path <- "~/GitHub/Statistical_Consulting/" #Insert your path
+rm(list=ls())
+path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
 knitr::opts_chunk$set(echo = TRUE)
-source(paste0(path, "Angela/packages.R"))
+source(paste0(path, "Code/Angela/packages.R"))
 load(paste0(path, "Presentation/Data/out.RData"))
+load(paste0(path, "Code/Angela/Data/var.RData"))
 ```
 
 # Introduction 
