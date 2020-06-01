@@ -60,7 +60,7 @@ The daily number of active person is analyzed as measure of COVID-19 situation. 
 So, the aim is to understand how the lockdown policies influences the contagions. We consider the aligned data respect to the first confirmed case, we have the following situation:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p1 <- ggplot(dat_shape, aes(x = date, y = active, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Date") + xlab("Confirmed")
+p1 <- ggplot(dat, aes(x = date, y = active, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Date") + xlab("Confirmed")
 
 div(ggplotly(p1), align = "center")
 ```
@@ -86,10 +86,10 @@ knitr::kable(tab_EC)
 ```
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p2 <- dat_shape %>% ggplot(aes(x=date, y=ox.E1_Income.support, group=Clusters, color=Clusters)) +
+p2 <- dat %>% ggplot(aes(x=date, y=E1_Income_support, group=Clusters, color=Clusters)) +
   geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Income Support") + xlab("Date")
 
-p3 <- dat_shape %>% ggplot(aes(x=date, y=ox.E2_Debt.contract.relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + theme(title = element_blank()) + scale_x_date(date_labels = "%b %d") + ylab("Debt Contract Relief") + xlab("Date")
+p3 <- dat %>% ggplot(aes(x=date, y=E2_Debt_contract_relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + theme(title = element_blank()) + scale_x_date(date_labels = "%b %d") + ylab("Debt Contract Relief") + xlab("Date")
 
 p2 <- ggplotly(p2, tooltip = c("x", "y", "Clusters"))
 p2$x$data[[1]]$showlegend <- FALSE
@@ -105,30 +105,30 @@ div(subplot(p2,p3), align = "center")
 We will combine these two first economic variables into one continous variables using the Polychoric Principal Component Analysis, in order to diminuish the number of covariates inside the model, having $9$ ordinal policies lockdown covariates. 
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-pca_EC <- polychoric(dat_shape[,var_EC[1:2]])
+pca_EC <- polychoric(dat[,var_EC[1:2]])
 matPCA_ec <- cbind(rep(0,2),pca_EC$tau)
-dat_shape$ox.E1_Income.support_f <- as.factor(dat_shape$ox.E1_Income.support)
-dat_shape$ox.E1_Income.support_f <- recode_factor(dat_shape$ox.E1_Income.support_f,
+dat$E1_Income_support_f <- as.factor(dat$E1_Income_support)
+dat$E1_Income_support_f <- recode_factor(dat$E1_Income_support_f,
                                                   "0" = paste0(matPCA_ec[1,1]),
                                                   "1" = paste0(matPCA_ec[1,2]),
                                                   "2" = paste0(matPCA_ec[1,3]))
 
-dat_shape$ox.E1_Income.support_f <- as.numeric(dat_shape$ox.E1_Income.support_f)
-dat_shape$ox.E2_Debt.contract.relief_f <- as.factor(dat_shape$ox.E2_Debt.contract.relief)
-dat_shape$ox.E2_Debt.contract.relief_f <- recode_factor(dat_shape$ox.E2_Debt.contract.relief_f,
+dat$E1_Income_support_f <- as.numeric(dat$E1_Income.support_f)
+dat$E2_Debt_contract_relief_f <- as.factor(dat$E2_Debt_contract_relief)
+dat$E2_Debt_contract_relief_f <- recode_factor(dat$E2_Debt_contract_relief_f,
                                                         "0" = paste0(matPCA_ec[2,1]),
                                                         "1" = paste0(matPCA_ec[2,2]),
                                                         "2" = paste0(matPCA_ec[2,3]))
-dat_shape$ox.E2_Debt.contract.relief_f <- as.numeric(dat_shape$ox.E2_Debt.contract.relief_f)
+dat$E2_Debt_contract_relief_f <- as.numeric(dat$E2_Debt_contract_relief_f)
 ```
 
 Therefore, the two economic variables in USD are examined and transformed in logarithmic scale in order to de-emphasizes very large values.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p2 <- dat_shape %>% ggplot(aes(x=date, y=ox.E3_Fiscal.measures, group=Clusters, color=Clusters)) +
+p2 <- dat %>% ggplot(aes(x=date, y=E3_Fiscal_measures, group=Clusters, color=Clusters)) +
   geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Fiscal Measures") + xlab("Date")
 
-p3 <- dat_shape %>% ggplot(aes(x=date, y=ox.E4_International.support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + theme(title = element_blank()) + scale_x_date(date_labels = "%b %d") + ylab("International Support") + xlab("Date")
+p3 <- dat %>% ggplot(aes(x=date, y=E4_International_support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + theme(title = element_blank()) + scale_x_date(date_labels = "%b %d") + ylab("International Support") + xlab("Date")
 
 p2 <- ggplotly(p2, tooltip = c("x", "y", "Clusters"))
 p2$x$data[[1]]$showlegend <- FALSE
@@ -141,9 +141,9 @@ p3 <- ggplotly(p3, tooltip = c("x", "y", "Clusters"))
 div(subplot(p2,p3), align = "center")
 
 #Log transformation
-dat_shape$ox.E3_Fiscal.measures_log <- log(dat_shape$ox.E3_Fiscal.measures +1)
-dat_shape$ox.E4_International.support <- ifelse(is.na(dat$ox.E4_International.support), 0, dat_shape$ox.E4_International.support)
-dat_shape$ox.E4_International.support_log <- log(dat_shape$ox.E4_International.support +1)
+dat$E3_Fiscal_measures_log <- log(dat$E3_Fiscal_measures +1)
+dat$E4_International_support <- ifelse(is.na(dat$E4_International_support), 0, dat$E4_International_support)
+dat$E4_International_support_log <- log(dat$E4_International_support +1)
 ```
 
 For further details about the definition of the economic variables, please see
@@ -151,7 +151,7 @@ For further details about the definition of the economic variables, please see
 ### Demographic/Fixed variables
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p <- ggplot(dat_shape, aes(x=Clusters, y=log(pop), fill=Clusters)) + geom_boxplot() 
+p <- ggplot(dat, aes(x=Clusters, y=log(pop), fill=Clusters)) + geom_boxplot() 
 
 ggplotly(p)
 
@@ -166,14 +166,14 @@ knitr::kable(tab_H)
 ```
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p <- dat_shape %>% ggplot(aes(x=date2, y=ox.H4_Emergency.investment.in.healthcare, group=Clusters, color=Clusters)) +
+p <- dat %>% ggplot(aes(x=date2, y=H4_Emergency_investment_in_healthcare, group=Clusters, color=Clusters)) +
   geom_smooth() 
 
 ggplotly(p)
 ```
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p <- dat_shape %>% ggplot(aes(x=date2, y=ox.H5_Investment.in.vaccines, group=Clusters, color=Clusters)) +
+p <- dat %>% ggplot(aes(x=date2, y=H5_Investment_in_vaccines, group=Clusters, color=Clusters)) +
   geom_smooth() 
 
 ggplotly(p)
@@ -195,8 +195,8 @@ The data are observed for each country nested within date.
 lot to understand the variability respect date
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-abc<-aggregate(active ~id, dat_shape, mean)
-bdata <- dat_shape
+abc<-aggregate(active ~id, dat, mean)
+bdata <- dat
 bdata <- merge(bdata,abc,by="id")
 bdata$colorBox <- ifelse(bdata$active.y>= mean(na.omit(bdata$active.x)), "#56B4E9", "#009E73")
 
@@ -209,8 +209,8 @@ ggplot(bdata, aes(x=id, y=active.x, fill = colorBox)) +
 and respect Clusters:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-abc<-aggregate(active ~Clusters, dat_shape, mean)
-bdata <- dat_shape
+abc<-aggregate(active ~Clusters, dat, mean)
+bdata <- dat
 bdata <- merge(bdata,abc,by="Clusters")
 bdata$colorBox <- ifelse(bdata$active.y>= mean(na.omit(bdata$active.x)), "#56B4E9", "#009E73")
 
@@ -223,8 +223,8 @@ ggplot(bdata, aes(x=Clusters, y=active.x, fill = colorBox)) +
 and id:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-abc<-aggregate(active ~date2, dat_shape, mean)
-bdata <- dat_shape
+abc<-aggregate(active ~date2, dat, mean)
+bdata <- dat
 bdata <- merge(bdata,abc,by="date2")
 bdata$colorBox <- ifelse(bdata$active.y>= mean(na.omit(bdata$active.x)), "#56B4E9", "#009E73")
 
@@ -249,7 +249,7 @@ summary(mod1)
 ```
 
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-a <- ggplot(dat_shape, aes(x = date, y = active/1000, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula = 'y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Active per 1000") + xlab("Date") 
+a <- ggplot(dat, aes(x = date, y = active/1000, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula = 'y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Active per 1000") + xlab("Date") 
 
 ggplotly(a)
 ```
