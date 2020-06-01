@@ -11,7 +11,6 @@ output:
     number_sections: true
     fig_width: 6
     fig_height: 4
-  pdf_document: null
 graphics: yes
 header-includes: \usepackage{graphicx, amsmath, bm, gensymb}
 fontsize: 12pt
@@ -312,14 +311,14 @@ ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
   theme_minimal() + ylab("") 
 ```
 
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
 eff <- ggeffect(mod1, terms = c("workplace_closingF", "gatherings_restrictionsF", "stay_home_restrictionsF", "transport_closingF"))
-div(plot(eff), align = "center")
+plot(eff)
 ```
 
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
 eff <- ggeffect(mod1, terms = c("testing_policyF", "contact_tracingF"))
-div(plot(eff), align = "center")
+plot(eff)
 ```
 
 
