@@ -29,14 +29,11 @@ load("~/GitHub/Lockdown_policies_COVID19/Code/Angela/Data/var.RData")
 
 # Introduction 
 
-Since the beginning of the COVID-19 epidemic, policy makers in different countries have introduced different political action to contrast the contagion. The containment restrictions span from worldwide curfews, stay-at-home orders, shelter-in-place orders, shutdowns/lockdowns to softer measures and stay-at-home recommendations and including in addition the development of contact tracing strategies and specific testing policies.
-The pandemic has resulted in the largest amount of shutdowns/lockdowns worldwide at the same time in history.
+Since the beginning of the COVID-19 epidemic, policymakers in different countries have introduced different political action to contrast the contagion. The containment restrictions span from worldwide curfews, stay-at-home orders, shelter-in-place orders, shutdowns/lockdowns to softer measures, and stay-at-home recommendations and including, besides the development of contact tracing strategies and specific testing policies. The pandemic has resulted in the largest amount of shutdowns/lockdowns worldwide at the same time in history.
 
-The timing of the different interventions with respect to the spread of the contagion both at a global and intra-national level has been very different from country to country. This, in combination with demographical, economic, health-care related and area-specific factors, have resulted in different contagion patterns across the world.
+The timing of the different interventions concerning the spread of the contagion both at a global and intra-national level has been very different from country to country. The between-countries variability, in combination with demographical, economic, health-care-related, and area-specific factors, has resulted in different contagion patterns across the world.
 
-
-Therefore, our goal is two-fold. The aim is to measure the effect of the different political actions by analysing and comparing types of actions from a global perspective and, at the same time, to benchmark the effect of the same action in an heterogeneous framework such as the Italian regional context.
-
+Therefore, our goal is two-fold. The aim is to measure the effect of the different political actions by analyzing and comparing types of actions from a global perspective and, at the same time, to benchmark the effect of the same action in a heterogeneous framework such as the Italian regional context.
 
 different regions of Italy.
 
@@ -49,16 +46,17 @@ The data used in this analysis refer to mainly two open datasets, i.e., the COVI
 
 # Effect of policies from a global perspective 
 
-Some countries have underestimated the dangerousness of the Coronavirus disease 2019 (COVID-19) and the importance to apply the containment measures. The little concern of some countries regarding the COVID-19 infectious disease is due by many and different reason. Some countries decided to save the economy instead of people lives, i.e., it is a method to fight a war, in this case the pandemic war. 
-For that, we want to analyze which coutries adopt the ``optimal'' policy measures to contain the contagion of COVID-19. Thanks to the @Oxford data sets, we know which type of measures each goverment take and when. The indicators of government response considered are $17$ in total, that can be resumed in indicators of lockdown/social distancing, contact tracing, movement restrictions, testing policy, public health measures, and governance and socio-economic measures.
+Some countries have underestimated the dangerousness of the Coronavirus disease 2019 (COVID-19) and the importance of applying the containment measures. The little concern of some countries regarding the COVID-19 infectious disease is due to many and different reasons. Some countries decided to save the economy instead of people's lives, i.e., it is a method to fight a war; in this case, the pandemic war. 
 
-Therefore, some variables as the number of hospital beds are considered from [OECD](http://www.oecd.org/) in order to have some additional covariates that can be influence the variation in government responses to COVID-19. 
+For that, we want to analyze which countries adopt the ``optimal'' policy measures to contain the contagion of COVID-19. Thanks to the @Oxford data sets, we know which type of measures each government takes and when. The indicators of government response considered are $17$ in total, that can be resumed in indicators of a lockdown/social distancing, contact tracing, movement restrictions, testing policy, public health measures, and governance and socio-economic measures.
 
-We restrict the wide range of responses to COVID-19 from governments around the countries analyzed in Section 3, i.e., Korea, Singapore, Germany, Canada, Sweden, Greece, Portugal, Spain, United States of America, Irland, United Kingdom, Italy, Netherlands, Austria, Switzerland, Finland, Norway, Denmark, and France.
+Therefore, some variables as the number of hospital beds are considered from [OECD](http://www.oecd.org/) to have some additional covariates that can influence the variation in government responses to COVID-19. 
 
-The daily number of active person is analyzed as measure of COVID-19 situation. Being a count variable, we decide to use a Negative Binomial Regression in order to correct also for the possible overdispersion. Therefore, the hierarchical struture induced by the nested structure of countries inside the clusters and by the repeated measures statement. For that, we think to use a generalized mixed model with family negative binomial. The countries information as well as the clusters and date information are used as random effects in our model.
+We restrict the full range of responses to COVID-19 from governments around the countries analyzed in Section 3, i.e., Korea, Singapore, Germany, Canada, Sweden, Greece, Portugal, Spain, United States of America, Irland, United Kingdom, Italy, Netherlands, Austria, Switzerland, Finland, Norway, Denmark, and France.
 
-So, the aim is to understand how the lockdown policies influences the contagions. We consider the aligned data respect to the first confirmed case, we have the following situation:
+The daily number of active persons is analyzed as a measure of the COVID-19 situation. Being a count variable, we decide to use a Negative Binomial Regression to correct also for the possible overdispersion. Therefore, the hierarchical structure is induced by the nested structure of countries inside the clusters and by the statement of the repeated measure. For that, we decide to use a generalized mixed model with family negative binomial. The country's information and the clusters and date information, are used as random effects in our model.
+
+So, the aim is to understand how the lockdown policies influence the contagions. We consider the aligned data concerning the first confirmed case, and we have the following situation:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
 p1 <- ggplot(dat, aes(x = date, y = active, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Date") + xlab("Active")
@@ -66,11 +64,11 @@ p1 <- ggplot(dat, aes(x = date, y = active, group = Clusters, color = Clusters))
 div(ggplotly(p1), align = "center")
 ```
 
-Also, we lag the number of active respect to $14$ days, in order to consider the influences of the restrictions imposed at time $t$ on number of active at time $t+14$, in order to make a correct impact. The observations are aligned respect to the first confirmed case across the countries, in order to have observations directly comparable in a longitudinal point of view.
+Also, we lag the number of active respect to $14$ days, considering the influences of the restrictions imposed at time $t$ on the number of active at time $t+14$, to make a correct impact. The observations are aligned concerning the first confirmed case across the countries to have observations directly comparable from a longitudinal point of view.
 
 ## Exploratory Analysis {.tabset}
 
-The set of covariates considered in this analysis can be divided into three main area:
+The set of covariates considered in this analysis can be divided into three main areas:
 
   1. Longitudinal economic variables;
 
@@ -103,7 +101,7 @@ p3 <- ggplotly(p3, tooltip = c("x", "y", "Clusters"))
 div(subplot(p2,p3,shareY = F), align = "center")
 ```
 
-We will combine these two first economic variables into one continous variables using the Polychoric Principal Component Analysis, in order to diminuish the number of covariates inside the model, having $9$ ordinal policies lockdown covariates. 
+We combine these two first economic variables into one continuous variable using the Polychoric Principal Component Analysis, to diminish the number of covariates inside the model, having $9$ ordinal policies lockdown covariates. 
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
 quiet(pca_EC <- polychoric(dat[,var_EC[1:2]]),all = T)
@@ -123,7 +121,7 @@ dat$E2_Debt_contract_relief_f <- recode_factor(dat$E2_Debt_contract_relief_f,
 dat$E2_Debt_contract_relief_f <- as.numeric(dat$E2_Debt_contract_relief_f)
 ```
 
-Therefore, the two economic variables in USD are examined and transformed in logarithmic scale in order to de-emphasizes very large values.
+Therefore, the USD's two economic variables are examined and transformed into a logarithmic scale to de-emphasize very large values.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
 p2 <- dat %>% ggplot(aes(x=date, y=E3_Fiscal_measures, group=Clusters, color=Clusters)) +
@@ -213,7 +211,7 @@ p2 <- ggplotly(p2)
 div(subplot(p1,p2), align = "center")
 ```
 
-Also in this case, we transform the set of healthy variables into one continous variable using the Polycorin Principal Component Analysis.
+Also, in this case, we transform the set of healthy variables into one continuous variable using the Polycorin Principal Component Analysis.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
 pca_hs <- princomp(na.omit(dat[,var_HS]), cor = TRUE)
@@ -230,9 +228,9 @@ div(p1, align = "center")
 
 ## Model
 
-The data are observed for each country nested within date. We are considering also the Clusters variable, therefore we have three level structure of the data. Therefore, the variability of the data comes from nested sources: countries are nested within clusters where the measures of the observations are repeated across time, i.e., longitudinal data.
+The data are observed for each country nested within the temporal date. We are also considering the Clusters variable. Therefore we have a three-level structure of the data. Therefore, the variability of the data comes from nested sources: countries are nested within clusters where the measures of the observations are repeated across time, i.e., longitudinal data.
 
-For that, the mixed model approach is considered in order to exploit the different type of variability coming from the hierarchical structure of our data. Firstly, the Intraclass correlation coefficient (ICC) is computed:
+For that, the mixed model approach is considered to exploit the different types of variability coming from the hierarchical structure of our data. Firstly, the Intraclass correlation coefficient (ICC) is computed:
 
 $$
 ICC_{date; active} = 0.0936 \quad ICC_{Countries; Active} = 0.4015 \quad ICC_{Clusters; Active} = 0.0951 
@@ -244,7 +242,7 @@ $$
 #ICCest(Clusters, active, dat)
 ```
 
-Therefore, the $40.15\%$ of the variance of the data is given by the random effect of the countries, while the $9.36\%$ by the temporal effect and $9.51\%$ by the clusters effect. Therefore, the mixed model will impose of sure a random effect for the countries, the other two effects will be selected using the conditional AIC
+Therefore, the $40.15\%$ of the data's variance is given by the random effect of the countries, while the $9.36\%$ by the temporal effect and $9.51\%$ by the clusters effect. Therefore, the mixed model impose of sure a random effect for the countries; the other two effects is selected using the conditional AIC.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T, fig.align="center"}
 abc<-aggregate(active ~id, dat, mean)
@@ -258,8 +256,8 @@ ggplot(bdata, aes(x=id, y=log(active.x + 1), fill = colorBox)) +
                     name="Active Mean")
 ```
 
-The random effects are used to model multiple sources of variations and subject-specific effects, and thus avoid biased inference on the fixed effects. The dependent variable is the cumulated number of active person, therefore a count data model is considered. In order to control the overdispersion of our data, i.e., the conditional variance exceeds the conditional mean, the negative binomial regression with Gaussian-distributed random effects is used. Let $n$ countries, and country $i$ is measured at $n_i$ time points $t_{ij}$. The active person $y_{ij}$ count at time $t+14$, where $i=1,\dots, n$ and $j = 1, \dots,n_i$, follows the negative binomial distribution:
-  
+The random effects are used to model multiple sources of variations and subject-specific effects, and thus avoid biased inference on the fixed effects. The dependent variable is the cumulated number of active persons; therefore, a count data model is considered. To control the overdispersion of our data, i.e., the conditional variance exceeds the conditional mean, the negative binomial regression with Gaussian-distributed random effects is performed using the glmmTMB R package developed by @glmmTMB. Let $n$ countries, and country $i$ is measured at $n_i$ time points $t_{ij}$. The active person $y_{ij}$ count at time $t+14$, where $i=1,\dots, n$ and $j = 1, \dots,n_i$, follows the negative binomial distribution:
+
 $$y_{ij} \sim NB(y_{ij}|\mu_{ij}, \theta) = \dfrac{\Gamma(y_{ij}+ \theta)}{\Gamma(\theta) y_{ij}!} \cdot \Big(\dfrac{\theta}{\mu_{ij} + \theta}\Big)^{\theta}\cdot \Big(\dfrac{\mu_{ij}}{\mu_{ij} + \theta}\Big)^{y_{ij}}$$
 where $\theta$ is the dispersion parameter that controls the amount of overdispersion, and $\mu_{ij}$ are the means. The means $\mu_{ij}$ are related to the host variables via the logarithm link function:
 
