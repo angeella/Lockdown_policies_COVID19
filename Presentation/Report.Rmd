@@ -105,19 +105,24 @@ ggplotly(a)
 </div> 
 </center>
 
-**WHY?**
-
 - We analyze the number of **Active person**, i.e., Confirmed - Deaths - Recovered $\rightarrow$ **Count Dependent Variable** (Generalized Poisson Model);
 
 
 - The data are observed for each **country nested within clusters** during $103$ **days** $\rightarrow$ **Mixed Model**.
 
 
+- **Confounders** from the World Bank Open Data and Oxford Data:
+  - **FIXED**: 
+    - Population density;
+  - **LONGITUDINAL**: 
+    - Economic: Income Support and Debt/contract relief for households;
+    - Health: Emergency Investment in healthcare and Investment in vaccines.
+    
 ## Which policies acted better? {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
 
 ```{r,echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
 out0 <- as.data.frame(ggeffect(mod1, terms = "workplace_closingF"))
-out0$Value <- c("No measures", "Recommend closing or work from home", "require closing for some sector" ,"Require closing all-but-essential workplaces")
+out0$Value <- c("No measures", "Recommend closing or work from home", "Require closing for some sector" ,"Require closing all-but-essential workplaces")
 out1 <-as.data.frame(ggeffect(mod1, terms = "gatherings_restrictionsF"))
 out1$Value <- c("No measures", "> 1000", "100-1000 people", "10-100 people", "< 10 people")
 out2 <- as.data.frame(ggeffect(mod1, terms = "transport_closingF"))[c(1,3),]
@@ -138,16 +143,18 @@ OUT$Policies <- c(rep("Workplace Closing", nrow(out0)),
                   rep("Tracing", nrow(out5)))
 
 colnames(OUT)[1] <- "Strength"
+OUT$Policies <- as.factor(OUT$Policies)
+OUT$Strength <- as.factor(OUT$Strength)
 
 #OUT$cols <- c("slateblue1", "slateblue2", "slateblue3", "slateblue4")
 
 ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
   geom_bar(stat = "summary", fun = "mean", 
            position = position_dodge(width = 0.9)) +
-  scale_y_continuous(name = "Predicted counts of Active People after 14 days", limits = c(0, 1700))+ geom_errorbar(stat = "summary", fun.data = "mean_sdl", 
-                fun.args = list(mult = 2),
-                position =  position_dodge(width =1)) +
-  geom_text(aes(label=Value, group = Strength),     hjust = -0.1, size = 3,
+  scale_y_continuous(name = "Predicted counts of Active People after 14 days", limits = c(0, 2500))+ geom_errorbar(stat = "summary", fun.data = "mean_sdl", 
+                fun.args = list(mult = 2),na.rm = FALSE,
+                position =  position_dodge(width =2)) +
+  geom_text(aes(label=OUT$Value, group = OUT$Strength),   hjust = -0.2, size = 3,
             position = position_dodge(width = 1),
             inherit.aes = TRUE)  + coord_flip() + scale_fill_viridis(discrete=T) +
   theme_minimal() + ylab("") 

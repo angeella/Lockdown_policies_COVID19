@@ -1,16 +1,16 @@
 rm(list=ls())
 #Seth path 
-path <- "~/GitHub/Statistical_Consulting/"
+path <- "~/GitHub/Lockdown_policies_COVID19//"
 
 #load package
-source(paste0(path,"Angela/packages.R"))
-source(paste0(path, "Angela/compute_R0_ML.R"))
-source(paste0(path,"Angela/utils.R"))
+source(paste0(path,"Code/Angela/packages.R"))
+source(paste0(path, "Code/Angela/compute_R0_ML.R"))
+source(paste0(path,"Code/Angela/utils.R"))
 #load variables names
-load(paste0(path,"Angela/Data/var.RData"))
+load(paste0(path,"Code/Angela/Data/var.RData"))
 
 #load data
-load(paste0(path,"Angela/Data/db.RData"))
+load(paste0(path,"Code/Angela/Data/db.RData"))
 
 #Define Clusters 
 Cl1 <- c("KOR", "SGP")
@@ -168,7 +168,7 @@ comp_cluster <- glht_glmmTMB(mod1, linfct = mcp(Clusters = "Tukey"))
 
 comp_work <- glht_glmmTMB(mod1, linfct = mcp(workplace_closingF = "Tukey"))
 
-save(list = ls(all.names = TRUE), file = paste0(path,"Angela/out.RData"))
+save(list = ls(all.names = TRUE), file = paste0(path,"Code/Angela/out.RData"))
 
 
 
