@@ -91,7 +91,7 @@ ggarrange(restrict, testt, trace, ncol=3, nrow=1, common.legend = TRUE, legend="
 ## Motivation {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
 
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-load(paste0(path, "Angela/out.RData"))
+load(paste0(path, "Presentation/Data/out.RData"))
 a <- ggplot(dat, aes(x = date, y = active/1000, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula = 'y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Cumulated Active per 1000") + xlab("Date") 
 
 ggplotly(a)
