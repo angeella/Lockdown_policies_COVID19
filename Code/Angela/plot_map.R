@@ -20,10 +20,10 @@ clust$id[20] <- "USA"
 clust$id[10] <- "UK"
 pr<-ggeffect(mod1, "Clusters")
 
-clust$predicted <- ifelse(clust$cluster == "1", pr$predicted[1],
-                          ifelse(clust$cluster == "2", pr$predicted[2],
-                                 ifelse(clust$cluster == "3", pr$predicted[3],
-                                        ifelse(clust$cluster == "4", pr$predicted[4], pr$predicted[5]))))
+clust$predicted <- ifelse(clust$cluster == "1", pr$predicted[1]/pr$predicted[4],
+                          ifelse(clust$cluster == "2", pr$predicted[2]/pr$predicted[4],
+                                 ifelse(clust$cluster == "3", pr$predicted[3]/pr$predicted[4],
+                                        ifelse(clust$cluster == "4", pr$predicted[4]/pr$predicted[4], pr$predicted[5]/pr$predicted[4]))))
 clust$predicted <- round(clust$predicted,2)
 clust$predicted <- as.factor(clust$predicted)
 world <- map_data("world")
@@ -133,7 +133,7 @@ attr(eff1, "legend.title") <- ""
 attr(eff1,"title") <- "Stay Home"
 levels(eff1$group) <-  c("No measures", "> 1000", "100-1000 people", "10-100 people", "< 10 people")
 
-p1 <- plot(eff1) + ylab("Effect of the clusters on predicted actives after 14 days")+ 
+p1 <- plot(eff1) + ylab("")+ 
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
                                          axis.title.x = element_blank(),
@@ -144,7 +144,7 @@ attr(eff2, "legend.title") <- ""
 attr(eff2,"title") <- "Testing"
 levels(eff2$group) <-  c("No measures", "Specific criteria", "Symptoms", "Open")
 
-p2 <- plot(eff2)+ ylab("Effect of the clusters on predicted actives after 14 days")+
+p2 <- plot(eff2)+ ylab("")+
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
                                          axis.title.x = element_blank(),
@@ -155,14 +155,14 @@ attr(eff3, "legend.title") <- ""
 attr(eff3,"title") <- "Tracing"
 levels(eff3$group) <-  c("No measures", "Limited", "Comprehensive")
 a <- plot(eff3)
-p3 <- plot(eff3) + ylab("Effect of the clusters on predicted actives after 14 days")+ 
+p3 <- plot(eff3) + ylab("")+ 
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
                                          axis.title.x = element_blank(),
                                          legend.position = "None")
 
 
-save(p1,p2,p3, file = "~/GitHub/Statistical_Consulting/Presentation/Data/plot_mod.RData")
+save(p1,p2,p3, file = "~/GitHub/Lockdown_policies_COVID19/Presentation/Data/plot_mod.RData")
 
 
 

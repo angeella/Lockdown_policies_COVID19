@@ -78,8 +78,7 @@ gray=viridis(begin=0, end=0.5, 8,option = "D")
 ggplot(outSilvia, aes(x=PC, y=Loadings, fill=policies, group=position))+ 
  geom_bar(stat="identity", position="dodge")+
   coord_flip()+scale_fill_manual("", breaks=c(apol, rpol), 
-                                 values=c(peach[1], peach[2],                                           peach[3], gray[1:8]),
-                                 labels  = Hmisc::capitalize(gsub("_", " ", policies))
+                                 values=c(peach[1], peach[2],                                           peach[3], gray[1:8])
                                     )
 ```
  
@@ -116,7 +115,7 @@ gd <- gd %>%
 a <- ggplot(gd, aes(x = as.integer(date2), y = active_over_pop_1000, color = Clusters)) +
   geom_line(aes(group = id), alpha = .7) +
   geom_smooth(aes(x = as.integer(date2), y =  active_group, color = Clusters),method = 'loess',formula = 'y ~ x',se = T,size = 1.5) +
-  theme_classic()  + ylab("Active/pop per 1000") + xlab("Day at first contagion")
+  theme_classic()  + ylab("Active/pop per 1000") + xlab("Days after first case") + xlim(0,max(as.integer(gd$date2)))
 #  +scale_x_date(date_labels = "%b %d")
 a <- ggplotly(a, tooltip = c("id", "active_over_pop_1000"))
 
@@ -185,7 +184,7 @@ OUT$Strength <- as.factor(OUT$Strength)
 ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
   geom_bar(stat = "summary", fun = "mean", 
            position = position_dodge(width = 0.9)) +
-  scale_y_continuous(name = "Predicted counts of Active People after 14 days", limits = c(0, 2500))+ geom_errorbar(stat = "summary", fun.data = "mean_sdl", 
+  scale_y_continuous(name = "Effect of policies on predicted actives after 14 days", limits = c(0, 2500))+ geom_errorbar(stat = "summary", fun.data = "mean_sdl", 
                 fun.args = list(mult = 2),na.rm = FALSE,
                 position =  position_dodge(width =2)) +
   geom_text(aes(label=OUT$Value, group = OUT$Strength),   hjust = -0.2, size = 3,
