@@ -55,7 +55,7 @@ Policymakers in different Countries have introduced <span style="color:rgb(17,57
 
 ## Containment strategies {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
 
-```{r, echo=FALSE}
+```{r, echo=FALSE,include=FALSE}
 load(paste0(path,"Presentation/Data/cluster20paesi.Rdata"))
 load(paste0(path,"Presentation/Data/SAVEPLOTS.Rdata"))
 readRDS(paste0(path, "Presentation/Data/dpca.rds"))
