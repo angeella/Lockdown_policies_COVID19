@@ -58,6 +58,7 @@ Policymakers in different Countries have introduced <span style="color:rgb(17,57
 ```{r, echo=FALSE}
 load(paste0(path,"Presentation/Data/cluster20paesi.Rdata"))
 load(paste0(path,"Presentation/Data/SAVEPLOTS.Rdata"))
+readRDS(paste0(path, "Presentation/Data/dpca.rds"))
 ```
 
 ## Containment strategies {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
@@ -65,6 +66,8 @@ load(paste0(path,"Presentation/Data/SAVEPLOTS.Rdata"))
 **Restriction-based** policies on one hand, **Tracing** and **Testing** policies on the other hand.
 
 ```{r, echo=FALSE}
+peach=rainbow(3, start=0.08, end=0.17)
+gray=viridis(begin=0, end=0.5, 8,option = "D")
 ggplot(dpca, aes(x=PC, y=Loadings, fill=policies, group=position))+
  geom_bar(stat="identity", position="dodge")+
   coord_flip()+scale_fill_manual("", breaks=c(apol, rpol), 
@@ -122,18 +125,21 @@ a %>% layout(legend = list(orientation = "h", y =-.2))
 </div> 
 </center>
 
-- We analyze the number of **Active person**, i.e., Confirmed - Deaths - Recovered, $14$ days after lockdown policies application $\rightarrow$ **Count Dependent Variable** (Generalized Poisson Model);
 
 
-- The data are observed for each **country nested within clusters** during $131$ **days** $\rightarrow$ **Mixed Model**.
+
+- We analyze the number of **Active person**, i.e., Confirmed - Deaths - Recovered, $14$ days after lockdown policies application $\rightarrow$ **Count Dependent Variable** (Generalized Poisson Model)
+
+
+- The data are observed for each **country nested within clusters** during $131$ **days** $\rightarrow$ **Mixed Model**
 
 
 - **Confounders** from the World Bank Open Data and Oxford Data:
   - **FIXED**: 
-    - Population density;
+    - Population density
   - **LONGITUDINAL**: 
-    - Economic: Income Support and Debt/contract relief for households;
-    - Health: Emergency Investment in healthcare and Investment in vaccines.
+    - Economic: Income Support and Debt/contract relief for households
+    - Health: Emergency Investment in healthcare and Investment in vaccines
     
 ## Which policies acted better? {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
 
@@ -178,9 +184,11 @@ ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
 ```
 
 ## Who acted promptly? {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
+Predicted counts of Active after 14 days
 
 ```{r echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-load(paste0(path, "Presentation/Data/plot_map.RData"))
+path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
+load(paste0(path, "Presentation/Data/plot_mapAngela.RData"))
 grid.arrange(na2, europe2,                 
              arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
              ncol = 3, nrow=1, widths=c(3,4,2))    
@@ -189,29 +197,38 @@ grid.arrange(na2, europe2,
 ## Who acted promptly? {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
 
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
 load(paste0(path, "Presentation/Data/plot_mod.RData"))
-
 subplot(ggplotly(p1, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = ""),
  ggplotly(p2, tooltip = c("colour", "y"))%>% layout(showlegend = FALSE,title = ""), 
 ggplotly(p3, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "Gatherings Restrictions           Testing            Tracing"), shareY = T
 ) 
 ```
 
+<span style="color:rgb(17,57,219);">Cl1</span> = KOR SGP; <span style="color:rgb(17,57,219);">Cl2</span> = DEU SWE; <span style="color:rgb(17,57,219);">Cl3</span> = CAN GRC PRT USA;  <span style="color:rgb(17,57,219);">Cl4</span> = ESP GBR IRL ITA NLD; <span style="color:rgb(17,57,219);">Cl5</span> = AUT BEL CHE DNK FIN FRA NOR
+
 ## Take home message {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
 
 
-
-- <span style="color:rgb(17,57,219);">Lockdown policies work!</span> respect to impose no measure;
-
-- Strong Testing and Tracing policies lead to discovering more infected people (luckily!)
+<span style="color:rgb(235,21,21);">POLICIES:</span>
 
 
+- <span style="color:rgb(17,57,219);">Lockdown policies work!</span> respect to impose no measure in general(that's good!)
 
-- **Korea and Singapore are the best countries that acted properly**;
+-  <span style="color:rgb(17,57,219);">Weak gatherings restrictions</span> still work! For example restrictions on gatherings between 100-1000 people
 
-- Sweden, Germany, Portugal, and Greece better than the other UE countries;
+- <span style="color:rgb(17,57,219);">Strong Testing and Tracing policies</span> lead to discovering more infected people (luckily!)
 
-- The USA, and Canada better than the other UE countries except for Sweden and Germany.
+
+
+<span style="color:rgb(235,21,21);">COUNTRIES:</span>
+
+
+- **Korea and Singapore are the best countries that acted properly**
+
+- Sweden, Germany, Portugal, and Greece better than the other UE countries
+
+- The USA, and Canada better than the other UE countries except for Sweden and Germany
 
 
 # Italy Case {data-background=covid.jpg data-background-size=cover}
