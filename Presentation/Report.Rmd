@@ -65,6 +65,7 @@ load(paste0(path,"Presentation/Data/SAVEPLOTS.Rdata"))
 **Restriction-based** policies on one hand, **Tracing** and **Testing** policies on the other hand.
 
 ```{r, echo=FALSE}
+readRDS("Presentation/Data/dpca.rds")
 ggplot(dpca, aes(x=PC, y=Loadings, fill=policies, group=position))+
  geom_bar(stat="identity", position="dodge")+
   coord_flip()+scale_fill_manual("", breaks=c(apol, rpol), 
