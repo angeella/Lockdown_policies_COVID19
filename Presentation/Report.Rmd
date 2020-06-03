@@ -167,7 +167,7 @@ ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
 load(paste0(path, "Presentation/Data/plot_map.RData"))
 grid.arrange(na2, europe2,                 
              arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
-             ncol = 3, nrow=1, widths=c(3,4,2))    
+            ncol = 3, nrow=1, widths=c(3,4,2))    
 ```
 
 ## Who acted promptly? {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
