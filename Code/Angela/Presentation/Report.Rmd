@@ -116,7 +116,7 @@ gd <- gd %>%
 a <- ggplot(gd, aes(x = as.integer(date2), y = active_over_pop_1000, color = Clusters)) +
   geom_line(aes(group = id), alpha = .7) +
   geom_smooth(aes(x = as.integer(date2), y =  active_group, color = Clusters),method = 'loess',formula = 'y ~ x',se = T,size = 1.5) +
-  theme_classic()  + ylab("Active/pop per 1000") + xlab("Date")
+  theme_classic()  + ylab("Active/pop per 1000") + xlab("Day at first contagion")
 #  +scale_x_date(date_labels = "%b %d")
 a <- ggplotly(a, tooltip = c("id", "active_over_pop_1000"))
 
@@ -206,8 +206,8 @@ grid.arrange(na2, europe2,
 ```
 
 ## Who acted promptly? {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
-
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+Effect of the clusters on predicted actives after $14$ days considering different levels of policies
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.height=4}
 path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
 load(paste0(path, "Presentation/Data/plot_mod.RData"))
 
