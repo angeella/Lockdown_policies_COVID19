@@ -220,15 +220,12 @@ b$x$data[[1]]$marker$color <- b$x$data[[1]]$marker$line$color
 b$x$data[[2]]$marker$color <- b$x$data[[2]]$marker$line$color
 b$x$data[[3]]$marker$color <- b$x$data[[3]]$marker$line$color
 b$x$data[[4]]$marker$color <- b$x$data[[4]]$marker$line$color
-b$x$data[[5]]$marker$color <- b$x$data[[5]]$marker$line$color
 
 cc <-ggplotly(p3, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "Gatherings Restrictions           Testing            Tracing")
 
 cc$x$data[[1]]$marker$color <- cc$x$data[[1]]$marker$line$color
 cc$x$data[[2]]$marker$color <- cc$x$data[[2]]$marker$line$color
 cc$x$data[[3]]$marker$color <- cc$x$data[[3]]$marker$line$color
-cc$x$data[[4]]$marker$color <- cc$x$data[[4]]$marker$line$color
-cc$x$data[[5]]$marker$color <- cc$x$data[[5]]$marker$line$color
 
 subplot(a, b, cc, shareY = T) 
 ```
