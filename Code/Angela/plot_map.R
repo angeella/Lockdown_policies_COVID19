@@ -133,7 +133,8 @@ attr(eff1, "legend.title") <- ""
 attr(eff1,"title") <- "Stay Home"
 levels(eff1$group) <-  c("No measures", "> 1000", "100-1000 people", "10-100 people", "< 10 people")
 
-p1 <- plot(eff1) + ylab("Predicted counts of Active after 14 days")+ scale_color_discrete() +
+p1 <- plot(eff1) + ylab("Effect of the clusters on predicted actives after 14 days")+ 
+  scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
                                          axis.title.x = element_blank(),
                                          legend.position = "None")
@@ -143,7 +144,8 @@ attr(eff2, "legend.title") <- ""
 attr(eff2,"title") <- "Testing"
 levels(eff2$group) <-  c("No measures", "Specific criteria", "Symptoms", "Open")
 
-p2 <- plot(eff2)+ ylab("Predicted counts of Active after 14 days")+ scale_color_discrete() +
+p2 <- plot(eff2)+ ylab("Effect of the clusters on predicted actives after 14 days")+
+  scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
                                          axis.title.x = element_blank(),
                                          legend.position = "None")
@@ -153,10 +155,12 @@ attr(eff3, "legend.title") <- ""
 attr(eff3,"title") <- "Tracing"
 levels(eff3$group) <-  c("No measures", "Limited", "Comprehensive")
 a <- plot(eff3)
-p3 <- plot(eff3) + ylab("Predicted counts of Active after 14 days")+ scale_color_discrete() +
+p3 <- plot(eff3) + ylab("Effect of the clusters on predicted actives after 14 days")+ 
+  scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
                                          axis.title.x = element_blank(),
                                          legend.position = "None")
+
 
 save(p1,p2,p3, file = "~/GitHub/Statistical_Consulting/Presentation/Data/plot_mod.RData")
 

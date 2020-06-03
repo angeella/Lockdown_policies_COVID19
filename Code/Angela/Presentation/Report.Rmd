@@ -20,8 +20,6 @@ knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
 source(paste0(path, "Code/Angela/packages.R"))
 ```
 
-# Explorative Analysis {data-background=covid.jpg data-background-size=cover}
-
 ## Objective {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
 
 Policymakers in different Countries have introduced <span style="color:rgb(17,57,219);">different political action</span> to contrast the COVID19 contagion.
@@ -35,10 +33,13 @@ Policymakers in different Countries have introduced <span style="color:rgb(17,57
 ## Data {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
 
 
-* COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at **Johns Hopkins University** for contagion data,
+* COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at **Johns Hopkins University** for contagion data
 
-*  **Oxford** COVID-19 Government Response Tracker (OxCGRT) for policies tracking. 
+*  **Oxford** COVID-19 Government Response Tracker (OxCGRT) for policies tracking 
 
+* **World Bank Open Data** for population demographic characteristics
+
+# Explorative Analysis {data-background=covid.jpg data-background-size=cover}
 
 ## Containment strategies and resembling patterns {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
 
@@ -56,9 +57,10 @@ Policymakers in different Countries have introduced <span style="color:rgb(17,57
 ## Containment strategies {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
 
 ```{r, echo=FALSE,include=FALSE}
+path <- "~/GitHub/Lockdown_policies_COVID19/"
 load(paste0(path,"Presentation/Data/cluster20paesi.Rdata"))
 load(paste0(path,"Presentation/Data/SAVEPLOTS.Rdata"))
-readRDS(paste0(path, "Presentation/Data/dpca.rds"))
+outSilvia <- readRDS(paste0(path, "Presentation/Data/dpca.rds"))
 ```
 
 ## Containment strategies {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
@@ -66,6 +68,10 @@ readRDS(paste0(path, "Presentation/Data/dpca.rds"))
 **Restriction-based** policies on one hand, **Tracing** and **Testing** policies on the other hand.
 
 ```{r, echo=FALSE}
+path <- "~/GitHub/Lockdown_policies_COVID19/"
+load(paste0(path,"Presentation/Data/cluster20paesi.Rdata"))
+load(paste0(path,"Presentation/Data/SAVEPLOTS.Rdata"))
+outSilvia <- readRDS(paste0(path, "Presentation/Data/dpca.rds"))
 peach=rainbow(3, start=0.08, end=0.17)
 gray=viridis(begin=0, end=0.5, 8,option = "D")
 ggplot(dpca, aes(x=PC, y=Loadings, fill=policies, group=position))+
@@ -184,7 +190,7 @@ ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
 ```
 
 ## Who acted promptly? {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
-Predicted counts of Active after 14 days
+Effect of the clusters on predicted actives after $14$ days
 
 ```{r echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
 path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
@@ -199,10 +205,32 @@ grid.arrange(na2, europe2,
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
 path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
 load(paste0(path, "Presentation/Data/plot_mod.RData"))
-subplot(ggplotly(p1, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = ""),
- ggplotly(p2, tooltip = c("colour", "y"))%>% layout(showlegend = FALSE,title = ""), 
-ggplotly(p3, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "Gatherings Restrictions           Testing            Tracing"), shareY = T
-) 
+
+a <- ggplotly(p1, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+a$x$data[[1]]$marker$color <- a$x$data[[1]]$marker$line$color
+a$x$data[[2]]$marker$color <- a$x$data[[2]]$marker$line$color
+a$x$data[[3]]$marker$color <- a$x$data[[3]]$marker$line$color
+a$x$data[[4]]$marker$color <- a$x$data[[4]]$marker$line$color
+a$x$data[[5]]$marker$color <- a$x$data[[5]]$marker$line$color
+
+b <-  ggplotly(p2, tooltip = c("colour", "y"))%>% layout(showlegend = FALSE,title = "")
+
+b$x$data[[1]]$marker$color <- b$x$data[[1]]$marker$line$color
+b$x$data[[2]]$marker$color <- b$x$data[[2]]$marker$line$color
+b$x$data[[3]]$marker$color <- b$x$data[[3]]$marker$line$color
+b$x$data[[4]]$marker$color <- b$x$data[[4]]$marker$line$color
+b$x$data[[5]]$marker$color <- b$x$data[[5]]$marker$line$color
+
+cc <-ggplotly(p3, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "Gatherings Restrictions           Testing            Tracing")
+
+cc$x$data[[1]]$marker$color <- cc$x$data[[1]]$marker$line$color
+cc$x$data[[2]]$marker$color <- cc$x$data[[2]]$marker$line$color
+cc$x$data[[3]]$marker$color <- cc$x$data[[3]]$marker$line$color
+cc$x$data[[4]]$marker$color <- cc$x$data[[4]]$marker$line$color
+cc$x$data[[5]]$marker$color <- cc$x$data[[5]]$marker$line$color
+
+subplot(a, b, cc, shareY = T) 
 ```
 
 <span style="color:rgb(17,57,219);">Cl1</span> = KOR SGP; <span style="color:rgb(17,57,219);">Cl2</span> = DEU SWE; <span style="color:rgb(17,57,219);">Cl3</span> = CAN GRC PRT USA;  <span style="color:rgb(17,57,219);">Cl4</span> = ESP GBR IRL ITA NLD; <span style="color:rgb(17,57,219);">Cl5</span> = AUT BEL CHE DNK FIN FRA NOR
