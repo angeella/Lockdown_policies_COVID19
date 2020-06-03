@@ -66,6 +66,8 @@ readRDS(paste0(path, "Presentation/Data/dpca.rds"))
 **Restriction-based** policies on one hand, **Tracing** and **Testing** policies on the other hand.
 
 ```{r, echo=FALSE}
+peach=rainbow(3, start=0.08, end=0.17)
+gray=viridis(begin=0, end=0.5, 8,option = "D")
 ggplot(dpca, aes(x=PC, y=Loadings, fill=policies, group=position))+
  geom_bar(stat="identity", position="dodge")+
   coord_flip()+scale_fill_manual("", breaks=c(apol, rpol), 
