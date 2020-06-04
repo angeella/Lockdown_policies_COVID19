@@ -342,7 +342,7 @@ ggplotly(p3, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = 
 
 All the codes used for this analysis is available on [Github](https://github.com/angeella/Lockdown_policies_COVID19).
 
-
+# References
 
 
 
