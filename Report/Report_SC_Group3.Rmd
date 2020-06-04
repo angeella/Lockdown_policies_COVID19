@@ -452,14 +452,14 @@ ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
 ```
 
 ```{r echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-load(paste0(path, "Presentation/Data/plot_map.RData"))
+load(paste0(mypath, "Presentation/Data/plot_map.RData"))
 grid.arrange(na2, europe2,                 
              arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
              ncol = 3, nrow=1, widths=c(3,4,2))    
 ```
 
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-load(paste0(path, "Presentation/Data/plot_mod.RData"))
+load(paste0(mypath, "Presentation/Data/plot_mod.RData"))
 
 subplot(ggplotly(p1, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = ""),
  ggplotly(p2, tooltip = c("colour", "y"))%>% layout(showlegend = FALSE,title = ""), 
