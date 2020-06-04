@@ -15,7 +15,7 @@ output:
 
 ```{r setup, include=FALSE}
 rm(list = ls())
-path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
+path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" #Insert your path
 knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
 source(paste0(path, "Code/Angela/packages.R"))
 ```
@@ -58,6 +58,7 @@ Policymakers in different Countries have introduced <span style="color:rgb(17,57
 ```{r, echo=FALSE}
 load(paste0(path,"Presentation/Data/cluster20paesi.Rdata"))
 load(paste0(path,"Presentation/Data/SAVEPLOTS.Rdata"))
+readRDS(paste0(path, "Presentation/Data/dpca.rds"))
 ```
 
 ## Containment strategies {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
@@ -65,6 +66,8 @@ load(paste0(path,"Presentation/Data/SAVEPLOTS.Rdata"))
 **Restriction-based** policies on one hand, **Tracing** and **Testing** policies on the other hand.
 
 ```{r, echo=FALSE}
+peach=rainbow(3, start=0.08, end=0.17)
+gray=viridis(begin=0, end=0.5, 8,option = "D")
 ggplot(dpca, aes(x=PC, y=Loadings, fill=policies, group=position))+
  geom_bar(stat="identity", position="dodge")+
   coord_flip()+scale_fill_manual("", breaks=c(apol, rpol), 
@@ -166,7 +169,7 @@ ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
 load(paste0(path, "Presentation/Data/plot_map.RData"))
 grid.arrange(na2, europe2,                 
              arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
-             ncol = 3, nrow=1, widths=c(3,4,2))    
+            ncol = 3, nrow=1, widths=c(3,4,2))    
 ```
 
 ## Who acted promptly? {data-background=back.jpg data-background-size=cover .flexbox .vcenter}
