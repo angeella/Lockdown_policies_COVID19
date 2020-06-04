@@ -23,8 +23,8 @@ rm(list=ls())
 path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
 knitr::opts_chunk$set(echo = TRUE)
 source(paste0(path, "Code/Angela/packages.R"))
-load(paste0(path, "Presentation/Data/out.RData"))
-load("~/GitHub/Lockdown_policies_COVID19/Code/Angela/Data/var.RData")
+load(paste0(path, "Code/Angela/Data/out.RData"))
+load(paste0(path, "Code/Angela/Data/var.RData"))
 ```
 
 # Introduction 
@@ -59,16 +59,35 @@ The daily number of active persons is analyzed as a measure of the COVID-19 situ
 So, the aim is to understand how the lockdown policies influence the contagions. We consider the aligned data concerning the first confirmed case, and we have the following situation:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p1 <- ggplot(dat, aes(x = date, y = active, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Date") + xlab("Active")
+gd <- dat %>% 
+  group_by(Clusters, date2) %>% 
+  mutate(active_group = round(mean((active/pop)*1000),3) )
 
-div(ggplotly(p1), align = "center")
+gd <- gd %>% 
+  mutate(active_over_pop_1000 = round((active/pop)*1000,3))
+
+a <- ggplot(gd, aes(x = as.integer(date2), y = active_over_pop_1000, color = Clusters)) +
+  geom_line(aes(group = id), alpha = .7) +
+  geom_smooth(aes(x = as.integer(date2), y =  active_group, color = Clusters),method = 'loess',formula = 'y ~ x',se = T,size = 1.5) +
+  theme_classic()  + ylab("Active/pop per 1000") + xlab("Days after first case") + xlim(0,max(as.integer(gd$date2)))
+#  +scale_x_date(date_labels = "%b %d")
+a <- ggplotly(a, tooltip = c("id", "active_over_pop_1000"))
+
+a$x$data[[1]]$name <- c(paste0(Cl1, collapse = " "))
+a$x$data[[2]]$name <- c(paste0(Cl2, collapse = " "))
+a$x$data[[3]]$name <- c(paste0(Cl3, collapse = " "))
+a$x$data[[4]]$name <- c(paste0(Cl4, collapse = " "))
+a$x$data[[5]]$name <- c(paste0(Cl5, collapse = " "))
+
+
+div(a %>% layout(legend = list(orientation = "h", y =-.2)), align = "center")
 ```
 
 Also, we lag the number of active respect to $14$ days, considering the influences of the restrictions imposed at time $t$ on the number of active at time $t+14$, to make a correct impact. The observations are aligned concerning the first confirmed case across the countries to have observations directly comparable from a longitudinal point of view.
 
 ## Exploratory Analysis {.tabset}
 
-The set of covariates considered in this analysis can be divided into three main areas:
+The set of confounders considered in this analysis can be divided into three main areas:
 
   1. Longitudinal economic variables;
 
@@ -85,9 +104,16 @@ knitr::kable(tab_EC)
 ```
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p2 <- dat %>% ggplot(aes(x=date, y=E1_Income_support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Income Support") + xlab("Date")
 
-p3 <- dat %>% ggplot(aes(x=date, y=E2_Debt_contract_relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + scale_x_date(date_labels = "%b %d") + ylab("Debt Contract Relief") + xlab("Date")
+gd <- dat %>% 
+  group_by(Clusters, date2) %>% 
+  mutate(E1_Income_support_group = round(E1_Income_support_f,3))
+
+p2 <- ggplot(gd, aes(x = as.integer(date2), y = E1_Income_support_group, color = Clusters)) +
+  geom_smooth(aes(x = as.integer(date2), y =  E1_Income_support_group, color = Clusters),method = 'loess',formula = 'y ~ x',se = T,size = 1.5) +
+  theme_classic()  + ylab("Income Support") + xlab("Days after first case") + xlim(0,max(as.integer(gd$date2)))
+
+p3 <- dat %>% ggplot(aes(x=as.integer(date2), y=E2_Debt_contract_relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Debt Contract Relief") + xlab("Days after first case")
 
 p2 <- ggplotly(p2, tooltip = c("x", "y", "Clusters"))
 p2$x$data[[1]]$showlegend <- FALSE
@@ -214,11 +240,6 @@ div(subplot(p1,p2), align = "center")
 Also, in this case, we transform the set of healthy variables into one continuous variable using the Polycorin Principal Component Analysis.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-pca_hs <- princomp(na.omit(dat[,var_HS]), cor = TRUE)
-dat$pca_hs <- predict(pca_hs,newdata = dat[,var_HS])[,1]
-```
-
-```{r, echo = FALSE, comment = F, warning= F, silent = T}
 p1 <- dat %>% ggplot(aes(x=date, y=pca_hs, group=Clusters, color=Clusters))  +
   geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Health Investment variable (PCA)") + xlab("Date")
 
@@ -226,7 +247,7 @@ p1 <- ggplotly(p1)
 div(p1, align = "center")
 ```
 
-## Model
+## Model {.tabset}
 
 The data are observed for each country nested within the temporal date. We are also considering the Clusters variable. Therefore we have a three-level structure of the data. Therefore, the variability of the data comes from nested sources: countries are nested within clusters where the measures of the observations are repeated across time, i.e., longitudinal data.
 
@@ -265,15 +286,48 @@ $$\log(\mu_{ij}) = \log(T_{ij}) + X_{ij} \beta + Z_{ij} b_i \quad b_i \sim \math
       
 where $\log(T_{ij})$ is the offset that corrects for the variation of the count of the active person at time $t$. $\text{E}(y_{ij}) = \mu$ and $\text{Var}(y_{ij}) = \mu (1 + \mu\phi)$ from @Hardin.
 
-After some covariates selection steps and random effects selection, the final model is expressed as:
+After some covariates selection steps and random effects selection, the final model returns these estimations for the fixed effects:
 
-```{r}
-summary(mod1)
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+outMod <- summary(mod1)
+outCoef <- outMod$coefficients$cond
+knitr::kable(outCoef, digits = 3)
 ```
 
-```{r,echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+and the variance for the random effects are equals:
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+outCoefRE <- as.data.frame(rbind(outMod$varcor$cond$id[1],outMod$varcor$cond$date2[1]))
+rownames(outCoefRE) <- c("Country", "Date")
+colnames(outCoefRE) <- c("Variance")
+knitr::kable(outCoefRE, digits = 3)
+```
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T, eval = F}
+#r.squaredGLMM(mod1)
+#lognormal 0.2873722 0.8999491
+#trigamma  0.2457431 0.7695816
+```
+
+The marginal $R^2$, i.e., the variance explained by the fixed effects, equals $0.28$, while the conditional one, i.e., the variance explained by the entire model, including both fixed and random effects, equals $0.89$ considering the lognormal approximation @Nakagawa. 
+
+Therefore, the model seems correctly formulated. Then, the main aim is to understand . 
+
+We will analyze the effects related to the following variables:
+
+1. Fixed effect of the lockdown policies;
+
+2. Fixed effect of the clusters;
+
+3. Fixed effect of the combination between lockdown policies and clusters;
+
+3. Random effect of the countries;
+
+### LOCKDOWN POLICIES
+
+```{r,echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center",fig.width=10,fig.height=5}
 out0 <- as.data.frame(ggeffect(mod1, terms = "workplace_closingF"))
-out0$Value <- c("No measures", "Recommend closing or work from home", "require closing for some sector" ,"Require closing all-but-essential workplaces")
+out0$Value <- c("No measures", "Recommend closing or work from home", "Require closing for some sector" ,"Require closing all-but-essential workplaces")
 out1 <-as.data.frame(ggeffect(mod1, terms = "gatherings_restrictionsF"))
 out1$Value <- c("No measures", "> 1000", "100-1000 people", "10-100 people", "< 10 people")
 out2 <- as.data.frame(ggeffect(mod1, terms = "transport_closingF"))[c(1,3),]
@@ -294,55 +348,190 @@ OUT$Policies <- c(rep("Workplace Closing", nrow(out0)),
                   rep("Tracing", nrow(out5)))
 
 colnames(OUT)[1] <- "Strength"
+OUT$Policies <- as.factor(OUT$Policies)
+OUT$Strength <- as.factor(OUT$Strength)
 
 #OUT$cols <- c("slateblue1", "slateblue2", "slateblue3", "slateblue4")
 
 ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
   geom_bar(stat = "summary", fun = "mean", 
            position = position_dodge(width = 0.9)) +
-  scale_y_continuous(name = "Predicted counts of Active People after 14 days", limits = c(0, 1700))+ geom_errorbar(stat = "summary", fun.data = "mean_sdl", 
-                fun.args = list(mult = 2),
-                position =  position_dodge(width =1)) +
-  geom_text(aes(label=Value, group = Strength),     hjust = -0.1, size = 3,
+  scale_y_continuous(name = "Effect of policies on predicted actives after 14 days", limits = c(0, 2500))+ geom_errorbar(stat = "summary", fun.data = "mean_sdl", 
+                fun.args = list(mult = 2),na.rm = FALSE,
+                position =  position_dodge(width =2)) +
+  geom_text(aes(label=OUT$Value, group = OUT$Strength),   hjust = -0.2, size = 3,
             position = position_dodge(width = 1),
             inherit.aes = TRUE)  + coord_flip() + scale_fill_viridis(discrete=T) +
   theme_minimal() + ylab("") 
 ```
 
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
-eff <- ggeffect(mod1, terms = c("workplace_closingF", "gatherings_restrictionsF", "stay_home_restrictionsF", "transport_closingF"))
-plot(eff)
+eff1 <- ggeffect(mod1, terms = c("workplace_closingF", "gatherings_restrictionsF", "stay_home_restrictionsF", "transport_closingF"))
+attr(eff1, "legend.title") <- "Gatherings Restrictions"
+attr(eff1,"title") <- ""
+
+levels(eff1$group) <-  c("No measures", "> 1000", "100-1000 people", "10-100 people", "< 10 people")
+
+p2 <- plot(eff1)+ ylab("")+
+  scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
+  theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
+                                         axis.title.x = element_blank())
+
+eff2 <- ggeffect(mod1, terms = c("testing_policyF", "contact_tracingF", "gatherings_restrictionsF"))
+attr(eff2, "legend.title") <- "Contact Tracing"
+attr(eff2,"title") <- ""
+
+levels(eff2$group) <-  c("No measures", "Limited", "Comprehensive")
+
+p2 <- plot(eff2)+ ylab("")+
+  scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
+  theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
+                                         axis.title.x = element_blank())
+
+
+p1
 ```
 
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
-eff <- ggeffect(mod1, terms = c("testing_policyF", "contact_tracingF"))
-plot(eff)
+p2
 ```
 
+### CLUSTERS
 
 ```{r echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
-load(paste0(path, "Presentation/Data/plot_map.RData"))
+load(paste0(path, "Code/Angela/Data/plot_mapAngela.RData"))
 grid.arrange(na2, europe2,                 
              arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
              ncol = 3, nrow=1, widths=c(3,4,2))    
 ```
 
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-load(paste0(path, "Presentation/Data/plot_mod.RData"))
+### INTERACTION LOCKDOWN POLICIES AND CLUSTERS
 
-div(subplot(ggplotly(p1, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = ""),
- ggplotly(p2, tooltip = c("colour", "y"))%>% layout(showlegend = FALSE,title = ""), 
-ggplotly(p3, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "Gatherings           Testing            Tracing"), shareY = T
-), align = "center") 
+#### Testing policies
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
+load(paste0(path, "Code/Angela/Data/plot_mod.RData"))
+
+a <- ggplotly(pTest, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
 ```
+
+#### Contact Tracing
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+a <- ggplotly(pCont, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+#### Gatherings Restrictions
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+a <- ggplotly(pGath, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+#### Stay Home Restrictions
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+a <- ggplotly(pSH, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+#### Workplace Closing
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+a <- ggplotly(pW, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+#### Transport Closing
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+a <- ggplotly(pTr, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+### COUNTRIES
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+path <- "~/GitHub/Lockdown_policies_COVID19/"
+load(paste0(path, "Code/Angela/Data/plot_ranef.RData"))
+pALL
+```
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+pOL
+```
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+pNL
+```
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+pTT
+```
+
+## To sum up
+
+
+
+
+
+
+
+
+
 
 # Italian lockdown and regional outcomes
 
 # Supplementary materials
 
-All the codes used for this analysis is available on [Github](https://github.com/angeella/Lockdown_policies_COVID19).
+All the codes used for this analysis is available on [Github](https://github.com/angeella/Lockdown_policies_COVID19). The report was written by rmarkdown, fully reproducible. You can find the rmakrdown file in [Github](https://github.com/angeella/Lockdown_policies_COVID19/Report).
 
-
+# References
 
 
 
