@@ -104,26 +104,23 @@ knitr::kable(tab_EC)
 ```
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
+p2 <- dat %>% ggplot(aes(x=as.integer(date2), y=E1_Income_support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Income Support") + xlab("Days after first case")+ xlim(0,max(as.integer(dat$date2))) + theme_classic()
 
-gd <- dat %>% 
-  group_by(Clusters, date2) %>% 
-  mutate(E1_Income_support_group = round(E1_Income_support_f,3))
+p2 <- ggplotly(p2, tooltip = c("id", "E1_Income_support")) + title("Income Support")
 
-p2 <- ggplot(gd, aes(x = as.integer(date2), y = E1_Income_support_group, color = Clusters)) +
-  geom_smooth(aes(x = as.integer(date2), y =  E1_Income_support_group, color = Clusters),method = 'loess',formula = 'y ~ x',se = T,size = 1.5) +
-  theme_classic()  + ylab("Income Support") + xlab("Days after first case") + xlim(0,max(as.integer(gd$date2)))
 
-p3 <- dat %>% ggplot(aes(x=as.integer(date2), y=E2_Debt_contract_relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Debt Contract Relief") + xlab("Days after first case")
+p3 <- dat %>% ggplot(aes(x=as.integer(date2), y=E2_Debt_contract_relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Debt Contract Relief") + xlab("Days after first case")+ xlim(0,max(as.integer(dat$date2))) + theme_classic()
 
-p2 <- ggplotly(p2, tooltip = c("x", "y", "Clusters"))
-p2$x$data[[1]]$showlegend <- FALSE
-p2$x$data[[2]]$showlegend <- FALSE
-p2$x$data[[3]]$showlegend <- FALSE
-p2$x$data[[4]]$showlegend <- FALSE
-p2$x$data[[5]]$showlegend <- FALSE
+a <- ggplotly(p3, tooltip = c("id", "E1_Income_support")) + title("Debt Contract Relief")
 
-p2 <- hide_legend(p2)
-p3 <- ggplotly(p3, tooltip = c("x", "y", "Clusters"))
+a$x$data[[1]]$name <- c(paste0(Cl1, collapse = " "))
+a$x$data[[2]]$name <- c(paste0(Cl2, collapse = " "))
+a$x$data[[3]]$name <- c(paste0(Cl3, collapse = " "))
+a$x$data[[4]]$name <- c(paste0(Cl4, collapse = " "))
+a$x$data[[5]]$name <- c(paste0(Cl5, collapse = " "))
+p3 <- a %>% layout(legend = list(orientation = "h", y =-.2))
+
+
 div(subplot(p2,p3,shareY = F), align = "center")
 ```
 
