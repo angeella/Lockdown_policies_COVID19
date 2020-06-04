@@ -35,10 +35,10 @@ require(ggpubr, quietly=T)
 require(gridExtra, quietly=T)
 require(psych, quietly=T)
 require(viridis, quietly=T)
-require(knitr)
 
-load("/Users/siviadenicolo/Documents/GitHub/Statistical_Consulting/cluster20paesi.Rdata")
-load("/Users/siviadenicolo/Documents/GitHub/Statistical_Consulting/Silvia/SAVEPLOTS.Rdata")
+path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
+load(paste0(path, "Code/Silvia/cluster20paesi.Rdata"))
+load(paste0(path, "Code/Silvia/SAVEPLOTS.Rdata"))
 ```
 
 # Introduction 
@@ -173,7 +173,7 @@ testing available to asymptomatic people).
 [^1]: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data
 [^2]: https://github.com/OxCGRT/covid-policy-tracker
 
-## Containment strategies and resembling patterns
+# Containment strategies and resembling patterns
 
 Identification and codification of different measures undertaken by governments performed by University of Oxford results in 11 ordinal variables selected as lockdown policies. This sets up the necessity to analyze and to aggregate them in a synthetic way in order to find out whether specific combinations of those policies making up political strategies come out to have a resemblance pattern across countries.
 
