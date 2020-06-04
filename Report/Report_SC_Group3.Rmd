@@ -21,15 +21,12 @@ bibliography: references.bib
 
 ```{r setup, include=FALSE}
 rm(list=ls())
-path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" #Insert your path
+#Insert your path
 knitr::opts_chunk$set(echo = TRUE)
-source(paste0(path, "Code/Angela/packages.R"))
-load(paste0(path, "Presentation/Data/out.RData"))
-load(paste0(path, "Code/Angela/Data/var.RData"))
-
-
-load(paste0(path, "Code/Silvia/cluster20paesi.Rdata"))
-load(paste0(path, "Code/Silvia/SAVEPLOTS.Rdata"))
+mypath <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
+source(paste0(mypath, "Code/Angela/packages.R"))
+load(paste0(mypath, "Code/Silvia/cluster20paesi.Rdata"))
+load(paste0(mypath, "Code/Silvia/SAVEPLOTS.Rdata"))
 ```
 
 # Introduction 
@@ -215,7 +212,13 @@ The daily number of active person is analyzed as measure of COVID-19 situation. 
 
 So, the aim is to understand how the lockdown policies influences the contagions. We consider the aligned data respect to the first confirmed case, we have the following situation:
 
+```{r, include=FALSE}
+load(paste0(mypath, "Presentation/Data/out.RData"))
+load(paste0(mypath, "Code/Angela/Data/var.RData"))
+```
+
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
+
 p1 <- ggplot(dat, aes(x = date, y = active, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Date") + xlab("Confirmed")
 
 div(ggplotly(p1), align = "center")
@@ -464,10 +467,8 @@ ggplotly(p3, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = 
 ) 
 ```
 
+
 # Italian lockdown and regional outcomes
-
-
-# Effect of policies from a global perspective
 
 
 # Supplementary materials
