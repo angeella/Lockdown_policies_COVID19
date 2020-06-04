@@ -1,0 +1,214 @@
+---
+title: 'Measuring the effect of different political actions to contrast the contagion
+  of COVID19'
+date: "03th June, 2020"
+fontfamily: avant
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    fig_width: 6
+    fig_height: 4
+graphics: yes
+header-includes: \usepackage{graphicx, amsmath, bm, gensymb}
+fontsize: 12pt
+subtitle: Angela Andreella, Michele Lambardi, Silvia De Nicolò
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, include=F}
+rm(list = ls())
+require(COVID19, quietly=T)
+require(ggplot2, quietly=T)
+require(dplyr, quietly=T)
+require(countrycode, quietly=T)
+require(maps, quietly=T)
+require(rnaturalearth, quietly=T)
+require(rnaturalearthdata, quietly=T)
+require(ggpubr, quietly=T)
+require(gridExtra, quietly=T)
+require(psych, quietly=T)
+require(viridis, quietly=T)
+require(knitr)
+
+load("/Users/siviadenicolo/Documents/GitHub/Statistical_Consulting/cluster20paesi.Rdata")
+load("/Users/siviadenicolo/Documents/GitHub/Statistical_Consulting/Silvia/SAVEPLOTS.Rdata")
+```
+
+# Introduction 
+
+Since the beginning of the COVID-19 epidemic, policy makers in different countries have introduced different political action to contrast the contagion. The containment restrictions span from worldwide curfews, stay-at-home orders, shelter-in-place orders, shutdowns/lockdowns to softer measures and stay-at-home recommendations and including in addition the development of contact tracing strategies and specific testing policies.
+The pandemic has resulted in the largest amount of shutdowns/lockdowns worldwide at the same time in history.
+
+The timing of the different interventions with respect to the spread of the contagion both at a global and intra-national level has been very different from country to country. This, in combination with demographical, economic, health-care related and area-specific factors, have resulted in different contagion patterns across the world.
+
+
+Therefore, our goal is two-fold. The aim is to measure the effect of the different political actions by analysing and comparing types of actions from a global perspective and, at the same time, to benchmark the effect of the same action in an heterogeneous framework such as the Italian regional context.
+
+Therefore, our goal is two-fold. The aim is to measure the effect of the different political actions by analysing and comparing types of actions from a global perspective and, at the same time, to benchmark the effect of the same action in an heterogeneous framework such as the Italian regional context.
+
+In doing so, some issue arises concerning the identification and codification of the different measures undertaken by governments, the analysis related to whether a strategies resemblance can be detected across countries and the measurement of the effects of containment policies on contagion. Thus, after an introductory section explaining data and variables, a second section regards some explanatory analysis facing the codification of containment policies and the strategies resembling patterns.
+The third section deals with the measurement of policies effect from a global perspective, lastly the forth section analyze Italian lockdown and regional outcomes. Conclusion are drawn in the last section. 
+
+
+## Data and Variables
+
+The data repositories used for this project are *COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University* [^1] for contagion data, and *Oxford COVID-19 Government Response Tracker (OxCGRT)*[^2] for policies tracking.
+
+Contagion data..
+
+The *Oxford COVID-19 Government Response Tracker (OxCGRT)* collects all the containment policies adopted by government worldwide by making available information on 11 indicators of government containment responses of ordinal type. These indicators measure policies on a simple scale of severity / intensity and are reported for each day a policy is in place, specifying if they are “targeted”, applying only to a sub-region of a jurisdiction, or a specific sector; or “general”, applying throughout that jurisdiction or across the economy.
+
+The containment ordinal variables considered are:
+
+* __School closing__ records closings of schools and
+universities with levels: 0 - No measures
+1 - recommend closing
+2 - Require closing (only some levels or
+categories, eg just high school, or just
+public schools)
+3 - Require closing all levels.
+
+* __Workplace closing__ records closings of
+workplaces with levels:0 - No measures
+1 - recommend closing (or work from
+home)
+2 - require closing (or work from home)
+for some sectors or categories of
+workers
+3 - require closing (or work from home)
+all-but-essential workplaces (e.g. grocery
+stores, doctors).
+
+* __Cancel public
+events__ records cancelling
+public events with levels: 0- No measures
+1 - Recommend cancelling
+2 - Require cancelling.
+
+* __Restrictions on
+gatherings__ records the cut-off
+size for bans on
+private gatherings with levels: 0 - No restrictions
+1 - Restrictions on very large gatherings
+(the limit is above 1000 people)
+2 - Restrictions on gatherings between
+101-1000 people
+3 - Restrictions on gatherings between
+11-100 people
+4 - Restrictions on gatherings of 10
+people or less.
+
+* __Close public
+transport__ records closing of
+public transport with levels: 0 - No measures
+1 - Recommend closing (or significantly
+reduce volume/route/means of
+transport available)
+2 - Require closing (or prohibit most
+citizens from using it).
+
+* __Stay at home
+requirements__ records orders to
+“shelter-in- place”
+and otherwise
+confine to home with levels: 0 - No measures
+1 - recommend not leaving house
+2 - require not leaving house with
+exceptions for daily exercise, grocery
+shopping, and ‘essential’ trips
+3 - Require not leaving house with
+minimal exceptions (e.g. allowed to
+leave only once a week, or only one
+person can leave at a time, etc.).
+
+* __Restrictions on
+internal
+movement__ records restrictions on
+internal movement with levels: 0 - No measures
+1 - Recommend not to travel between
+regions/cities
+2 – internal movement restrictions in
+place.
+
+* __International
+travel controls__ records restrictions on
+international travel with levels: 0 - No measures
+1 - Screening
+2 - Quarantine arrivals from high-risk
+regions
+3 - Ban on arrivals from some regions
+4 – Ban on all regions or total border
+closure.
+
+* __Public info
+campaigns__ records presence of
+public info
+campaigns with levels: 0 -No COVID-19 public information
+campaign
+1 - public officials urging caution about
+COVID-19
+2 - coordinated public information campaign
+(e.g. across traditional and social media).
+
+* __Testing policy__ describing who can get
+tested by public health system with levels: 0 – No testing policy
+1 – Only those who both (a) have symptoms
+AND (b) meet specific criteria (e.g. key
+workers, admitted to hospital, came into
+contact with a known case, returned from
+overseas)
+2 – testing of anyone showing COVID-19
+symptoms
+3 – open public testing (e.g. “drive through”
+testing available to asymptomatic people).
+
+
+[^1]: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data
+[^2]: https://github.com/OxCGRT/covid-policy-tracker
+
+## Containment strategies and resembling patterns
+
+Identification and codification of different measures undertaken by governments performed by University of Oxford results in 11 ordinal variables selected as lockdown policies. This sets up the necessity to analyze and to aggregate them in a synthetic way in order to find out whether specific combinations of those policies making up political strategies come out to have a resemblance pattern across countries.
+
+Therefore, we performed a Principal Component Analysis based on the polychoric correlation. It allows to estimate the correlation between two theorised normally distributed continuous latent variables, from two observed ordinal variables. It has no closed form but it is estimated via MLE assuming the two latent variables follows a bivariate normal density.
+
+The interpretation of the first three principal components (accounting for the 80\% of total variance) appears to be clear (see Figure \ref{figs}): the first one is closely related with freedom of movements and gathering restrictions together with information campaigns strategy, crucial in cases of draconian measures, the second one is related with the strategy of informing and testing the population, lastly the third one is related to informing and contact tracing the population. Summarizing, on one hand a first containment strategy aims at social distancing the entire population, on the other hand a second one aims at act locally and rapidly detect and isolate the positive cases, with two (alternative or complementary) tools: tracing contacts of infected and/or blanket population testing.
+
+```{r figs,  echo=FALSE, fig.cap="\\label{fig:figs}First 3 Principal Components Loadings."}
+
+peach=rainbow(3, start=0.08, end=0.17)
+gray=viridis(begin=0, end=0.5, 8,option = "D")
+ggplot(dpca, aes(x=PC, y=Loadings, fill=policies, group=position))+
+ geom_bar(stat="identity", position="dodge")+
+  coord_flip()+scale_fill_manual("", breaks=c(apol, rpol), 
+                                 values=c(gray[1], peach[1], gray[2],                                           peach[2], gray[3:6], peach[3], gray[7:8]))
+
+```
+
+We want now to figure out which countries have adopted the undelined strategies and whether there is a strategies resemblance across countries, considering both the combination of measures undetaken and the timing w.r.t. the day of the first contagion detection on country soil.
+In order to do so, we performed a functional co-clustering of the first three principal components taking into account 20 countries in a specific time span (which varies from country to country) that depends on when the first covid cases has been detected on national soil. We perfomed an alignment of the contagion pattern from the 10th day before first contagion detection, in order to include also relevant information on the prevention measures.
+
+Considering a matrix of 20 countries (rows) of 3 curves (columns or functional features- restriction-based, testing-based and tracing-based policies) s.t. $x=(x_{ij}(t))_{1\leq i \leq 20; 1 \leq j\leq3}$ with $t \in [0,85]$, we reconstructed the functional form of the data from their discrete observations (85 days) by assuming that curves belong to a finite dimensional space spanned by a basis of functions and then we estimated a functional latent block model used for co-clustering. 
+
+The two policies clusters depicts Restriction-based policies on one hand, Tracing and Testing-based policies on the other hand, confirming that these last two policies reflects a common strategy as described above.
+
+The countries clusters are displayed in Figure \ref{figs2}: (South Korea, Singapore), (Germany, Sweden), (USA, Canada, Greece, Portugal), (Italy, Spain, Ireland, UK, Netherlands), (Norway, Denmark, Finland, France, Belgium, Switzerland, Austria). The interpretation can be grasped in Figure \ref{figs3}. South Korea and Singapore political strategy is characterized by the detection and isolation of the positive cases via contact tracing and mild testing policies, without any relevant social distancing action. On the contrary Germany, Sweden strategy was to detect and isolate positive cases via an extensive testing policy strategy, without any strong social distancing measures in order to protect the economy. A very different strategy has been adopted by the cluster including Italy, Spain, Ireland, UK and Netherlands, which acted with social distancing measures at different temporal stages (considering in particular the north european countries of the cluster) but promptly with respect to the first contagion inside national borders. In particular the strategies of Ireland, UK and Netherland was very strict concerning school and workplace closing as well as gathering and international movement restiction, weaker as regards stay at home recommendations, internal movement restriction and transport closing but at the same time relying on a strong information campaign. On the other hand, Italy and Spain sharpened up stay at home and internal movement restrictions. USA, Canada, Greece and Portugal has adopted intermittently social distancing measures in addition with strong social tracing during the second part of the considered period. Lastly, Norway, Denmark, Finland, France, Belgium, Switzerland, Austria has adopted intermediate social distancing measure, in line with other European countries, but without any relevant testing or tracing measure in addition. 
+```{r figs2, fig.align='center', echo=FALSE, fig.cap="\\label{fig:figs2}Clusters map."}
+grid.arrange(na2, europe2,                  
+             arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
+             ncol = 3, nrow=1, widths=c(3,4,2)) 
+
+```
+
+
+```{r figs3, fig.align='center', echo=FALSE, fig.width = 8, fig.cap="\\label{fig:figs3}Clusters average functionals related to Social Distancing Restrinction, Testing and Tracing policies aligned at the day of the first contagion (vertical blue line)."}
+ggarrange(restrict, testt, trace, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
+
+```
