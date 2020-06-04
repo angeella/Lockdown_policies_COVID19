@@ -232,15 +232,14 @@ f <- as.formula(paste("active_lag", "~",
 mod1 <- glmmTMB(f, dat, family="nbinom2")
 
 #No lockdown policies
-predictRE <- ggeffects::ggpredict(mod1, terms = c("id"), condition = "active [100 1000]",
-                       type = "re")
+predictRE<- ggeffects::ggpredict(mod1, terms = c("id", "active [100, 1000]"), 
+                                 type = "re")
 
 pRE <- plot(predictRE) + ylab("")+
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
                                          axis.title.x = element_blank(),
                                          legend.position = "None")
-
 
 predRE <- data.frame(predicted = pRE$data$predicted, 
                      id = unlist(lapply(sort(states_to_sel), function(x) rep(x,2))),
@@ -270,13 +269,13 @@ pNL <-  ggplot(predRE) +
   geom_point(aes(x = id, y = predicted, shape =active, color = Clusters)) + 
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   ylab("Predicted Number of Actives after 14 days") + theme_minimal() +
-  geom_hline(yintercept = 1)
+  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000)
 
 #Combination si testing and tracing max no lockdown
 
-predictRE <- ggpredict(mod1, terms = c("id", "active [3000]"), condition = c( 
-                                                            "testing_policyF [3]",
-                                                            "contact_tracingF [2]"),
+predictRE <- ggpredict(mod1, terms = c("id", "active [100, 1000]"), condition = c( 
+                                                            testing_policyF =3,
+                                                            contact_tracingF=2),
                        type = "re")
 
 pRE <- plot(predictRE) + ylab("")+
@@ -305,14 +304,52 @@ pTT <- predRE %>%    # First sort by val. This sort the dataframe but NOT the fa
   mutate(id = fct_relevel(id,states_to_sel)) %>% ggplot() + 
   geom_point(aes(x = id, y = predicted, shape =active, color = Clusters)) + 
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
-  ylab("Predicted Number of Actives after 14 days") + theme_minimal()
+  ylab("Predicted Number of Actives after 14 days") + theme_minimal()  +
+  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000) +
+  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000)
 
 #Testing Tracing Stay Home and Gathering
 
-predictRE <- ggpredict(mod1, terms = c("id", 
-                                       "active [100, 1000]",
-                                       "workplace_closingF [3]",
-                                       "gatherings_restrictionsF [4]"), type = "re")
+predictRE <- ggpredict(mod1, terms = c("id", "active [100, 1000]"), condition = c( 
+  workplace_closingF =3, stay_home_restrictions = 3, cancel_events =2,
+  gatherings_restrictionsF=4),
+  type = "re")
+
+pRE <- plot(predictRE) + ylab("")+
+  scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
+  theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
+                                         axis.title.x = element_blank(),
+                                         legend.position = "None")
+
+
+predRE <- data.frame(predicted = pRE$data$predicted, 
+                     id = unlist(lapply(sort(states_to_sel), function(x) rep(x,2))),
+                     active = rep(c(100,1000), length(states_to_sel)))
+
+predRE$active <- as.factor(predRE$active)
+
+predRE$Clusters <- ifelse(predRE$id %in% Cl1, "Cl1", 
+                          ifelse(predRE$id %in% Cl2, "Cl2", 
+                                 ifelse(predRE$id %in% Cl3, "Cl3", 
+                                        ifelse(predRE$id %in% Cl4, "Cl4","Cl5"))))
+
+predRE$Clusters <- as.factor(predRE$Clusters)
+predRE$id <- as.factor(predRE$id)
+predRE$id = factor(predRE$id, levels=states_to_sel)
+
+pOL <- predRE %>%    # First sort by val. This sort the dataframe but NOT the factor levels
+  mutate(id = fct_relevel(id,states_to_sel)) %>% ggplot() + 
+  geom_point(aes(x = id, y = predicted, shape =active, color = Clusters)) + 
+  scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
+  ylab("Predicted Number of Actives after 14 days") + theme_minimal()  +
+  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000)
+
+#all
+
+predictRE <- ggpredict(mod1, terms = c("id", "active [100, 1000]"), condition = c( 
+  workplace_closingF =3, stay_home_restrictions = 3, cancel_events =2,
+  gatherings_restrictionsF=4, testing_policyF = 3, contact_tracingF = 2),
+  type = "re")
 
 
 pRE <- plot(predictRE) + ylab("")+
@@ -337,8 +374,12 @@ predRE$Clusters <- as.factor(predRE$Clusters)
 predRE$id <- as.factor(predRE$id)
 predRE$id = factor(predRE$id, levels=states_to_sel)
 
-pTT <- predRE %>%    # First sort by val. This sort the dataframe but NOT the factor levels
+pALL <- predRE %>%    # First sort by val. This sort the dataframe but NOT the factor levels
   mutate(id = fct_relevel(id,states_to_sel)) %>% ggplot() + 
   geom_point(aes(x = id, y = predicted, shape =active, color = Clusters)) + 
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
-  ylab("Predicted Number of Actives after 14 days") + theme_minimal()
+  ylab("Predicted Number of Actives after 14 days") + theme_minimal()  +
+  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000)
+
+
+save(pALL, pOL, pNL,pTT, file =paste0(path, "Code/Angela/Data/plot_raned.RData"))
