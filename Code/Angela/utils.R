@@ -11,3 +11,4 @@ modelparm.glmmTMB <- function (model, coef. = function(x) fixef(x)[[component]],
   multcomp:::modelparm.default(model, coef. = coef., vcov. = vcov.,
                                df = df, ...)
 }
+

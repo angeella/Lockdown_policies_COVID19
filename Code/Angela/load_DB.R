@@ -1,18 +1,24 @@
-rm(list=ls())
-#Seth path 
-path <- "~/GitHub/Lockdown_policies_COVID19//"
+###################################################################################
+##############################MAIN DATA PROCESS###################################
+###################################################################################
 
-#load package
+rm(list=ls())
+#Set your path
+path <- "~/GitHub/Lockdown_policies_COVID19/"
+
+#load packages
 source(paste0(path,"Code/Angela/packages.R"))
+#load compute R0 function
 source(paste0(path, "Code/Angela/compute_R0_ML.R"))
+#load utils function
 source(paste0(path,"Code/Angela/utils.R"))
 #load variables names
 load(paste0(path,"Code/Angela/Data/var.RData"))
 
-#load data
+#load Data (if you want to update it, please run merge_data.R)
 load(paste0(path,"Code/Angela/Data/db.RData"))
 
-#Define Clusters 
+#Define Clusters from functional clustering analysis
 Cl1 <- c("KOR", "SGP")
 Cl2 <- c("DEU", "SWE")
 Cl3 <- c("CAN", "USA","GRC", "PRT")
@@ -22,10 +28,11 @@ Cl5 <- c("AUT", "BEL", "CHE", "DNK", "FIN", "FRA", "NOR")
 states_to_sel <- c(Cl1,Cl2,Cl3,Cl4,Cl5)
 
 ############################Some preprocessing steps ############################
-#Filter data
+
+#Filter data considering only the states used in functional clustering
 dat <- dat %>% filter(id %in% states_to_sel)
 
-#Add Clusters variables
+#Add Clusters variables to the dataset
 dat$Clusters <- ifelse(dat$id %in% Cl1, "Cl1", 
                         ifelse(dat$id %in% Cl2, "Cl2", 
                                ifelse(dat$id %in% Cl3, "Cl3", 
@@ -43,7 +50,6 @@ dat <- dat %>%
   as.data.frame()
 
 #Compute R0 index
-
 dat <- add_R0_ML(dat)
 
 #Create confirmed variable lagged by 14 days
@@ -60,12 +66,11 @@ dat$recovered_count <- ave(dat$recovered, dat$id, FUN=function(x) pmax(0, c(0, d
 #Create confirmed prop variable lagged by 14 days and active
 dat <- 
   dat %>% 
-  #  group_by(id) %>%
   mutate(confirmed_prop = confirmed_lag/pop,
          active = pmax(confirmed - deaths - recovered, 0),
          active_count = pmax(confirmed_count - deaths_count - recovered_count, 0))
 
-#and lagged by 14 days
+#and lagged it by 14 days
 dat <- 
   dat %>% arrange(id, date) %>%
   group_by(id) %>%
@@ -95,13 +100,14 @@ dat$E3_Fiscal_measures_log <- log(dat$E3_Fiscal_measures +1)
 dat$E4_International_support <- ifelse(is.na(dat$E4_International_support), 0, dat$E4_International_support)
 dat$E4_International_support_log <- log(dat$E4_International_support +1)
 
-#Transform pop, pop density, gdp in logarithmic scale
+#Transform pop, pop density, gdp, pop urban log, surface area in logarithmic scale
 dat$pop_log <- log(dat$pop +1)
 dat$pop_density_log <- log(dat$pop_density + 1)
 dat$gdp_log <- log(dat$gdp + 1)
 dat$pop_urban_log<- log(dat$pop_urban + 1)
 dat$surface_area_log <- log(dat$surface_area + 1)
-#Pca for the two health variables
+
+#Perform PCA for the two health variables
 pca_hs <- princomp(na.omit(dat[,var_HS]), cor = TRUE)
 dat$pca_hs <- predict(pca_hs,newdata = dat[,var_HS])[,1]
 
@@ -116,7 +122,7 @@ dat$internal_movement_restrictionsF <- as.factor(dat$internal_movement_restricti
 dat$testing_policyF <- as.factor(dat$testing_policy)
 dat$contact_tracingF <- as.factor(dat$contact_tracing)
 
-#PCA policies lockdown
+#Perform PCA for the policies lockdown
 policies <- c("school_closing", 
               "workplace_closing", 
               "cancel_events", 
@@ -130,7 +136,7 @@ scores <- as.matrix(dat[,policies]) %*% p3$weights
 dat$pca_LD <- scores[,1]
 
 
-#PCA economics
+#Perform PCA for the economic variables
 policiesEC <- c("E1_Income_support", "E2_Debt_contract_relief")
 W <- polychoric(dat[,policiesEC])
 p3 <- principal(r = W$rho, nfactors = 1) 
@@ -141,34 +147,35 @@ scores <- as.matrix(db) %*% p3$weights
 dat$pca_EC <- scores[,1]
 
 
-#Transform name variables
+#Rename the set of variables that we will consider in the model
 
-var_EC <- c("E1_Income_support_f","E2_Debt.contract_relief_f", "pca_EC", "E3_Fiscal_measures_log", "E4_International_support_log")
-
+var_EC <- c("E1_Income_support_f","E2_Debt_contract_relief_f", "pca_EC", "E3_Fiscal_measures_log", "E4_International_support_log")
 var_FIX <- c("pop_log", "pop_65", "pop_density_log", "hosp_beds", "pop_death_rate",
              "gdp_log", "pop_urban_log", "surface_area_log")
-
 var_HS <- "pca_hs"
-
 var_LD <- c("school_closingF","workplace_closingF","cancel_eventsF",
             "gatherings_restrictionsF","transport_closingF","stay_home_restrictionsF",
             "internal_movement_restrictionsF","testing_policyF","contact_tracingF")
 
-#model
-
+#Define the formula for the model
 f <- as.formula(paste("active_lag", "~", 
                       paste(c(var_EC[c(3)]), collapse=" + "), 
                       "+", paste(c(var_FIX[c(3)]), collapse=" + "),
                       "+", paste(c(var_HS[1]), collapse=" + "),
                       "+", paste(c(var_LD[c(2,4:6,8:9)]),collapse=" + "),
                       "+ Clusters + (0 + pca_LD|id) + (1|date2)"))
+
+#Run the negative binomial mixed model with offeset defined as the logarithmic of the number of active at time t
 mod1 <- glmmTMB(f, dat, family="nbinom2", offset = log(active + 1))
 
+#Perform multiple comparison with Tukey adjust for the Clusters variable
 comp_cluster <- glht_glmmTMB(mod1, linfct = mcp(Clusters = "Tukey"))
 
+#Perform multiple comparison with Tukey adjust for the workplace closing variable
 comp_work <- glht_glmmTMB(mod1, linfct = mcp(workplace_closingF = "Tukey"))
 
-save(list = ls(all.names = TRUE), file = paste0(path,"Code/Angela/out.RData"))
+#save
+save(list = ls(all.names = TRUE), file = paste0(path,"Code/Angela/Data/out.RData"))
 
 
 
