@@ -104,14 +104,14 @@ knitr::kable(tab_EC)
 ```
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p2 <- dat %>% ggplot(aes(x=as.integer(date2), y=E1_Income_support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Income Support") + xlab("Days after first case")+ xlim(0,max(as.integer(dat$date2))) + theme_classic()
+p2 <- dat %>% ggplot(aes(x=as.integer(date2), y=E1_Income_support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Income Support") + xlab("Days after first case")+ xlim(0,max(as.integer(dat$date2))) + theme_classic() 
 
-p2 <- ggplotly(p2, tooltip = c("id", "E1_Income_support")) + title("Income Support")
+p2 <- ggplotly(p2, tooltip = c("id", "E1_Income_support"))  
 
 
 p3 <- dat %>% ggplot(aes(x=as.integer(date2), y=E2_Debt_contract_relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Debt Contract Relief") + xlab("Days after first case")+ xlim(0,max(as.integer(dat$date2))) + theme_classic()
 
-a <- ggplotly(p3, tooltip = c("id", "E1_Income_support")) + title("Debt Contract Relief")
+a <- ggplotly(p3, tooltip = c("id", "E1_Income_support"))
 
 a$x$data[[1]]$name <- c(paste0(Cl1, collapse = " "))
 a$x$data[[2]]$name <- c(paste0(Cl2, collapse = " "))
@@ -121,7 +121,7 @@ a$x$data[[5]]$name <- c(paste0(Cl5, collapse = " "))
 p3 <- a %>% layout(legend = list(orientation = "h", y =-.2))
 
 
-div(subplot(p2,p3,shareY = F), align = "center")
+div(subplot(p2,p3), align = "center")
 ```
 
 We combine these two first economic variables into one continuous variable using the Polychoric Principal Component Analysis, to diminish the number of covariates inside the model, having $9$ ordinal policies lockdown covariates. 
