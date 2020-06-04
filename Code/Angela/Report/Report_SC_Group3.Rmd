@@ -316,8 +316,6 @@ We will analyze the effects related to the following variables:
 
 3. Random effect of the countries;
 
-4. Fixed effect of the confounders.
-
 ### LOCKDOWN POLICIES
 
 ```{r,echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center",fig.width=10,fig.height=5}
@@ -493,10 +491,21 @@ div(a, align = "center")
 
 ### COUNTRIES
 
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+pALL
+```
 
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+pOL
+```
 
-### CONFOUNDERS
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+pNL
+```
 
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+pTT
+```
 
 ## To sum up
 
@@ -513,7 +522,7 @@ div(a, align = "center")
 
 # Supplementary materials
 
-All the codes used for this analysis is available on [Github](https://github.com/angeella/Lockdown_policies_COVID19).
+All the codes used for this analysis is available on [Github](https://github.com/angeella/Lockdown_policies_COVID19). The report was written by rmarkdown, fully reproducible. You can find the rmakrdown file in [Github](https://github.com/angeella/Lockdown_policies_COVID19/Report).
 
 # References
 
