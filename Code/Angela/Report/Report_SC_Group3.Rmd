@@ -87,7 +87,7 @@ Also, we lag the number of active respect to $14$ days, considering the influenc
 
 ## Exploratory Analysis {.tabset}
 
-The set of covariates considered in this analysis can be divided into three main areas:
+The set of confounders considered in this analysis can be divided into three main areas:
 
   1. Longitudinal economic variables;
 
@@ -104,9 +104,16 @@ knitr::kable(tab_EC)
 ```
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p2 <- dat %>% ggplot(aes(x=date, y=E1_Income_support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Income Support") + xlab("Date")
 
-p3 <- dat %>% ggplot(aes(x=date, y=E2_Debt_contract_relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + scale_x_date(date_labels = "%b %d") + ylab("Debt Contract Relief") + xlab("Date")
+gd <- dat %>% 
+  group_by(Clusters, date2) %>% 
+  mutate(E1_Income_support_group = round(E1_Income_support_f,3))
+
+p2 <- ggplot(gd, aes(x = as.integer(date2), y = E1_Income_support_group, color = Clusters)) +
+  geom_smooth(aes(x = as.integer(date2), y =  E1_Income_support_group, color = Clusters),method = 'loess',formula = 'y ~ x',se = T,size = 1.5) +
+  theme_classic()  + ylab("Income Support") + xlab("Days after first case") + xlim(0,max(as.integer(gd$date2)))
+
+p3 <- dat %>% ggplot(aes(x=as.integer(date2), y=E2_Debt_contract_relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Debt Contract Relief") + xlab("Days after first case")
 
 p2 <- ggplotly(p2, tooltip = c("x", "y", "Clusters"))
 p2$x$data[[1]]$showlegend <- FALSE
