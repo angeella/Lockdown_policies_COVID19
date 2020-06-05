@@ -1,0 +1,241 @@
+---
+title: 'Measuring the effect of different political actions to contrast the contagion
+  of COVID19'
+date: "03th June, 2020"
+fontfamily: avant
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_depth: 2
+    number_sections: true
+    fig_width: 6
+    fig_height: 4
+    fig_caption: yes
+  pdf_document: null
+graphics: yes
+header-includes: \usepackage{graphicx, amsmath, bm, gensymb}
+fontsize: 12pt
+subtitle: Angela Andreella, Michele Lambardi, Silvia De Nicolò
+bibliography: references.bib
+---
+
+```{r setup, include=FALSE}
+rm(list=ls())
+#Insert your path
+knitr::opts_chunk$set(echo = F)
+path <- "/home/michele/Grive/Archivio/Dottorato/Corsi/Statistical Consulting/Assignment/github/Lockdown_policies_COVID19/"
+```
+
+# Italian lockdown and regional outcomes
+
+In the previous sections, the effect of lockdown policies on the spreadth of contagion was estimated for each country, but data is available for some countries at regional level too. The aim in this section is to check for differences among **Italian regions**. Such an analysis is important for our Phase Two, as governors will have more power in tayloring lockdown measures down to their regions' needs.
+
+Data is still available from the same sources as before. The effect of different **policies** has already been estimated, while now **only their aggregate effect** can be assessed. Indeed the countermeasures for COVID19 escalated almost simultaneously all over the country (excepted the Red Zone, but only for few days) and on all sides (as to offices, schools, transit, etc). So in this analysis, all different policies are replaced by a single factor, which is the Phase: Zero, One. As to the newer Phase Two, too few days of data are available, so it will be discarded.
+
+Italian regions are known to be separated by a relevant divide under all socio-economic aspects. Unfortunately, integration among the COVID19 R package and other databases came lately, and manual linkage with other sources was hard, so that fewer variables are available at a regional level. Nonetheless, the mixed- and **random- effects** approach exploited in previous sections can still be useful in accounting for all the unobserved heterogeneity. Random effects can be used to address several problems, namely: some regions have less resources to find their infected inhabitants, so that the real proportions of contagion are bigger than numbers can say in some poorer regions.
+
+The time series of active cases is definitely not smooth, because cases are often spotted in bulks. Especially in early days of the emergency, the trend in active cases is highly non-stationary and many smoothing methods have failed in our analysis, both in the previous national-wise analysis and in the next regional-wise analysis. In order to best catch up with the non-stationarity, we adopt an approach that we call "**auto-regressive**", in the sense that we try to predict future counts of active cases based on the current counts. Predictions in this case stick less to older values and the model can follow the real trend more easily. This constitutes a safe control for baseline conditions, which are known to differ among regions, in that, e.g., the **international hubs** Lazio and Lombardia were struck earlier and more heavily by the Virus.
+
+Stated plainly, we model the relative increase of active cases that one can expect in 14 days, given the current cases and the causes of variation, that is, the type of lockdown and demographics of the regions. As in standard **panel data approach**, the regions make up the individuals, on which some measures are repeated on a daily basis.
+
+One random effect is assigned to **regions** and one to the **day**. This accounts for differences among regions and also for general changes in testing abilities. Moreover, the random effect for regions can change between **phases**. One more random effect is **day-and-region** specific, and it accounts for any badness in data collection or outlying events. It also solves the overdispersion problem with count data models like Poisson and binomial. As shown later, this stratagem allows to boil down the effect of testing errors, as it happened in Friuli and other regions now and then.
+
+The auto-regressive approach has the disadvantage of explaining most of future outcomes by using previous outcomes, which leave small room for assessing the effect of several demographic variables, which are (almost) **constant** through time. The effect of such demographic predictors is summed up by the aforementioned random effects though.
+
+One could model the prevalence, or the proportion of active cases over the population, by means of a binomial model. But we saw that, even though the actives are not few, an approximation to **Poisson** still holds. Binomial and Poisson models were seen to be very similar to each other, so only the Poisson model is reported. Small changes in the attached R codes can return both results and are on to the reader.
+
+# Results
+
+The model in use allows to estimate the expected relative variation of active cases in two weeks. This lag was chosen based on the latency of COVID19, which is the time we thought one would have to wait before the effect of any policies could be observed. Prediction intervals based on the behavior on the last day are reported in the following. The last day considered comes right after two weeks have elapsed after May 18th's retail reopenings.
+
+The random effects in use make it difficult to interpret the estimates, so we provide some summaries in the following to make the implications of our model more clear.
+
+```{r, include=F, fig.align='center'}
+# devtools::install_github('ropensci/plotly')
+require(plotly, quietly = T)
+require(sp, quietly = T)
+require(dplyr, quietly = T)
+require(glmmTMB, quietly = T)
+require(COVID19, quietly = T)
+require(effects, quietly = T)
+require(ggplot2, quietly = T)
+require(sf, quietly = T)
+require(sfheaders)
+require(rnaturalearth, quietly = T)
+require(rnaturalearthdata, quietly = T)
+load(paste0(path, "Code/Michele/out/regions.RData"))
+load(paste0(path, "Code/Michele/out/maps.RData"))
+map <- map %>% filter(country=="Italy")
+cutpoint <- c("2020-03-22", "2020-05-13")
+
+npaz <- 30
+
+dat <- dat %>%
+   mutate(
+      monthspoint=14/30*log(npaz/active)/log(ratepoint),
+      monthslower=14/30*log(npaz/active)/log(ratelower),
+      monthsupper=14/30*log(npaz/active)/log(rateupper)
+   ) %>%
+  filter((date >= cutpoint[1]) & (date <= cutpoint[2]))
+
+last <- dat %>%
+   filter(date==max(date)) %>%
+   left_join(map, by="region") %>%
+   st_as_sf()
+```
+
+```{r, warning=F, fig.align='center'}
+ggplotly(
+last %>%
+   arrange(ratepoint) %>%
+   mutate(region=factor(region, levels=region)) %>%
+  mutate(
+    ratepoint=(ratepoint-1)*100,
+     ratelower=(ratelower-1)*100,
+     rateupper=(rateupper-1)*100
+  )%>%
+   ggplot(aes(x=ratepoint, y=region)) +
+   geom_text(aes(x=rateupper, label=paste(" ", region)), hjust="left") +
+   geom_point() +
+   geom_errorbarh(aes(xmin=ratelower, x=ratepoint, xmax=rateupper)) +
+   theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.background = element_rect(fill = "white"),
+        panel.background = element_rect(fill="white"),
+        panel.grid.major.x = element_line(color="grey"),
+        panel.grid.minor.x = element_line(color="lightgrey"),
+        # panel.grid.major.y = element_line(color="grey"),
+        legend.position = "none") +
+   xlab("active cases in two weeks, expected") +
+   scale_x_continuous(limits = c(-100,0), labels = function(x) paste0(ifelse(x<0,"","+"), x, "%")) # Multiply by 100 
+) %>% style(textposition = "right")
+```
+
+One can see that the slowest recovery is observed in Lazio and Lombardia, which also serve as the Italian international hubs, from both a political and economic point of view. Larger confidence intervals correspond to regions that are smaller or hit less by the Virus. The case of Molise will be seen in the following as a rather peculiar one.
+
+The **take home message** here is that the international hubs would be jeopardized in the case of a slightly liberal Phase Two. In their case, it would be safer to still adopt restrictive measures, while the other regions may drive the economic recovery, since they have a larger margin of action, their recovery being faster.
+
+Based on the relative variation of active cases expected in two weeks, denoted $RV$, and on the current cases $I_t$ on day $t$, one can roughly estimate the implied cases on day $s$ with:
+$$I_s = I_t \times RV^{(s-t)/14}\,$$
+which matches the definition of $RV$ when $s-t=14$.
+
+One can think of the Estimated Time to Recovery (ETR, in days) as the time needed on average for the active cases less than, say, $n=$ `r npaz`. The ETR is related to the current cases $I_t$ and the $RV$ as:
+$$n \leq I_t \times RV^{ETR/14} \,,$$
+which implies the definition
+$$ETR/14 = \log(n/I_t)/\log(RV) \,,$$
+for the estimated weeks to recovery. When $RV$ is bigger than one, so the contagion is not under control, the ETR is negative. In the case of Italian regions, on the last day considered here, all the regions were, at a reasonable confidence level of $95\%$, behaving appropriately, as the $RV$ is less than one. In the following, the ETR is reported for each region.
+
+```{r, warning=F, fig.align='center'}
+ggplotly(
+last %>%
+   arrange(monthspoint) %>%
+   mutate(region=factor(region, levels=region)) %>%
+   ggplot(aes(x=monthspoint, y=region)) +
+   geom_point(aes(x=monthspoint)) +
+   geom_errorbarh(aes(xmin=monthslower, xmax=monthsupper, group=region)) +
+   geom_text(aes(x=monthsupper, label=paste(" ", region)), hjust="left") +
+   theme(axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.background = element_rect(fill = "white"),
+        panel.background = element_rect(fill="white"),
+        panel.grid.major.x = element_line(color="grey"),
+        panel.grid.minor.x = element_line(color="lightgrey"),
+        # panel.grid.major.y = element_line(color="grey"),
+        legend.position = "none") +
+   xlab(paste0("months to ", npaz, "-or-less active cases, expected, approximate")) +
+   xlim(0, 20)
+) %>% style(textposition = "right")
+```
+
+As one can see, even by rescaling and considering months- instead of weeks- to recovery, we are far away from full recovery. In the case of Lombardia and Lazio, several months are required before they recover in full. This makes it even more imperative than previously seen to still enforce some restrictive countermeasures in Lombardia and Lazio, because even with Phase One-like measures it would take about one year or more to defeat the Virus.
+
+The two features seen before, the rate of recovery and the time to recovery, the latter combining the former and the currently active cases, can be seen one versus the other, as follows.
+
+```{r, warning=F, fig.align='center'}
+ggplotly(
+   last %>%
+      mutate(ratepoint=100*(ratepoint-1)) %>%
+      ggplot(aes(x=ratepoint, y=monthspoint, group=region)) +
+      geom_point() +
+      geom_errorbar(aes(ymin=monthslower, ymax=monthsupper, group=region)) +
+      # geom_errorbar(aes(xmin=ratelower, xmax=rateupper, group=region)) +
+      # geom_text(aes(x=monthsupper, label=paste(" ", region)), hjust="left") +
+      theme(
+           plot.background = element_rect(fill = "white"),
+           panel.background = element_rect(fill="white"),
+           panel.grid.major.x = element_line(color="grey"),
+           panel.grid.minor.x = element_line(color="lightgrey"),
+           panel.grid.major.y = element_line(color="grey"),
+           panel.grid.minor.y = element_line(color="lightgrey"),
+           # panel.grid.major.y = element_line(color="grey"),
+           legend.position = "none") +
+      xlab(paste0("expected cases in two weeks")) +
+      ylab(paste0("months to ", npaz, "-or-less active cases")) +
+      ylim(0, 20) +
+      scale_x_continuous(limits = c(-100,0), labels = function(x) paste0(ifelse(x<0,"","+"), x, "%")) +
+      geom_text(aes(label=ifelse(ratepoint <= -30,"",paste0("  ", region))), hjust="left")
+      #+
+      # xlim(0, 24)
+) %>% style(textposition = "right")
+```
+
+Lombardia and Lazio are far out of the trend that seems to link the rate and time to recovery, as their time to recovery is slightly longer than that of any region with comparable rate of recovery, which must be due to the outlying number of current active cases.
+
+We just focus on the rate of recovery, while remembering of the anomaly represented by the international hubs. So one can see from the following map that reopenings surgically taylored down to the specific regions may take place, though it might be required to forbid or restrict travel to and from those areas.
+
+```{r, warning=F, fig.align='center'}
+# $ geometry           :sfc_MULTIPOLYGON of length 51; first list element: List of 1
+#   ..$ :List of 1
+#   .. ..$ : num [1:245, 1:2] -1111066 -1110710 -1096162 -1095175 -1012095 ...
+#   ..- attr(*, "class")= chr  "XY" "MULTIPOLYGON" "sfg"
+#  - attr(*, "sf_column")= chr "geometry"
+#  - attr(*, "relation_to_geometry")= Factor w/ 3 levels "field","lattice",..: NA NA NA NA NA NA NA NA NA NA ...
+#   ..- attr(*, "names")= chr  "geo_id" "fips_state" "name" "lsad" ...
+ggplotly(
+   last %>%
+      mutate(value=(ratepoint-1)*100) %>%
+      as_Spatial() %>%
+      st_as_sf() %>%
+      ggplot() +
+      geom_sf(aes(fill=value, group=region), color="black", lwd=0.5) +
+      scale_fill_gradientn(colors = c("white", "darkblue"), labels = function(x) paste0(ifelse(x<0,"","+"), x, "%")) +
+      theme(axis.text.x = element_blank(),
+            # axis.title.x = element_blank(),
+            axis.title.y = element_blank(),
+           axis.text.y = element_blank(),
+           axis.ticks = element_blank(),
+           rect = element_blank(),
+           legend.position = "none") +
+      # geom_sf_text(aes(label=ifelse(region=="Basilicata", "?", "")), color="white") +
+      xlab(paste0("active cases expected in two weeks, % variation"))
+)
+```
+
+Moreover, pressures in favor of reopening might be listened to in some industrially relevant regions like Veneto. As to holiday destinations, it is somewhat questionable the extent to which regions like Basilicata and Calabria might have performed their testings and lockdown enforcement. To our knowledge, the quality of data related to these two regions was already discussed by another team.
+
+Overall, our regions have achieved a good level of contagion containment, by working it out week after week as testified by the following plot. The predicted rate of recovery is plotted on daily basis. This works as a Poisson model-based smoothing of the rate of change in active cases. As one can see, many regions had the epidemic out of control for a rather long time, but the prompt response of the most affected regions has driven the contagion down to compensate for late responses anywhere else.
+
+```{r, warning=F, fig.align='center'}
+ggplotly(
+   dat %>%
+      mutate(value=100*(ratepoint-1)) %>%
+      ggplot(aes(x=date, y=value, color=region)) +
+      geom_line() +
+      theme(legend.position = "none") +
+      scale_x_date(date_labels = "%b %d") +
+      scale_y_continuous(limits = c(-100,+250), labels = function(x) paste0(ifelse(x<0,"","+"), x, "%")) +
+      xlab("") +
+      ylab("active cases in two weeks, expected")
+   )
+```
+
+Irregularities in the trend that catch one's attention may be, primarily:
+
+* mis-counts of cases in Friuli around half-April, as reported by guests at the seminar before the report,
+* prolonging emergency in Molise,
+* overall good behavior of Umbria and Valle d'Aosta, worsening quite abruptly and steadily ever after some point in Trentino.
+
+The estimated trend in Phase Zero is just too unstable to deserve reporting here. One must consider though that, compatibly with the results from previous sections on countries data, the epidemic was unquestionably out of control before the lockdown, and that the epidemics is still on the verge of booming again across Italy even under Phase One-like measures. This mandates for cautious and restrictive approaches from every region.
