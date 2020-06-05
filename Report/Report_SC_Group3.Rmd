@@ -23,10 +23,13 @@ bibliography: references.bib
 rm(list=ls())
 #Insert your path
 knitr::opts_chunk$set(echo = TRUE)
-mypath <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
-source(paste0(mypath, "Code/Angela/packages.R"))
-load(paste0(mypath, "Code/Silvia/cluster20paesi.Rdata"))
-load(paste0(mypath, "Code/Silvia/SAVEPLOTS.Rdata"))
+#path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
+path <- "~/GitHub/Lockdown_policies_COVID19/" 
+source(paste0(path, "Code/Angela/packages.R"))
+load(paste0(path, "Code/Silvia/cluster20paesi.Rdata"))
+load(paste0(path, "Code/Silvia/SAVEPLOTS.Rdata"))
+load(paste0(path, "Code/Angela/Data/out.RData"))
+load(paste0(path, "Code/Angela/Data/var.RData"))
 ```
 
 # Introduction 
@@ -49,7 +52,7 @@ The data repositories used for this project are *COVID-19 Data Repository by the
 
 Contagion data..
 
-The *Oxford COVID-19 Government Response Tracker (OxCGRT)* collects all the containment policies adopted by government worldwide by making available information on 11 indicators of government containment responses of ordinal type. These indicators measure policies on a simple scale of severity / intensity and are reported for each day a policy is in place, specifying if they are “targeted”, applying only to a sub-region of a jurisdiction, or a specific sector; or “general”, applying throughout that jurisdiction or across the economy.
+The *Oxford COVID-19 Government Response Tracker (OxCGRT)* collects all the containment policies adopted by government worldwide by making available information on 11 indicators of government containment responses of ordinal type. These indicators measure policies on a simple scale of severity / intensity and are reported for each day a policy is in place, specifying if they are "targeted", applying only to a sub-region of a jurisdiction, or a specific sector; or "general", applying throughout that jurisdiction or across the economy.
 
 The containment ordinal variables considered are:
 
@@ -102,13 +105,13 @@ citizens from using it).
 
 * __Stay at home
 requirements__ records orders to
-“shelter-in- place”
+"shelter-in- place"
 and otherwise
 confine to home with levels: 0 - No measures
 1 - recommend not leaving house
 2 - require not leaving house with
 exceptions for daily exercise, grocery
-shopping, and ‘essential’ trips
+shopping, and 'essential' trips
 3 - Require not leaving house with
 minimal exceptions (e.g. allowed to
 leave only once a week, or only one
@@ -120,7 +123,7 @@ movement__ records restrictions on
 internal movement with levels: 0 - No measures
 1 - Recommend not to travel between
 regions/cities
-2 – internal movement restrictions in
+2 - internal movement restrictions in
 place.
 
 * __International
@@ -130,7 +133,7 @@ international travel with levels: 0 - No measures
 2 - Quarantine arrivals from high-risk
 regions
 3 - Ban on arrivals from some regions
-4 – Ban on all regions or total border
+4 - Ban on all regions or total border
 closure.
 
 * __Public info
@@ -144,15 +147,15 @@ COVID-19
 (e.g. across traditional and social media).
 
 * __Testing policy__ describing who can get
-tested by public health system with levels: 0 – No testing policy
-1 – Only those who both (a) have symptoms
+tested by public health system with levels: 0 - No testing policy
+1 - Only those who both (a) have symptoms
 AND (b) meet specific criteria (e.g. key
 workers, admitted to hospital, came into
 contact with a known case, returned from
 overseas)
-2 – testing of anyone showing COVID-19
+2 - testing of anyone showing COVID-19
 symptoms
-3 – open public testing (e.g. “drive through”
+3 - open public testing (e.g. "drive through"
 testing available to asymptomatic people).
 
 
@@ -186,7 +189,7 @@ Considering a matrix of 20 countries (rows) of 3 curves (columns or functional f
 The two policies clusters depicts Restriction-based policies on one hand, Tracing and Testing-based policies on the other hand, confirming that these last two policies reflects a common strategy as described above.
 
 The countries clusters are displayed in Figure \ref{figs2}: (South Korea, Singapore), (Germany, Sweden), (USA, Canada, Greece, Portugal), (Italy, Spain, Ireland, UK, Netherlands), (Norway, Denmark, Finland, France, Belgium, Switzerland, Austria). The interpretation can be grasped in Figure \ref{figs3}. South Korea and Singapore political strategy is characterized by the detection and isolation of the positive cases via contact tracing and mild testing policies, without any relevant social distancing action. On the contrary Germany, Sweden strategy was to detect and isolate positive cases via an extensive testing policy strategy, without any strong social distancing measures in order to protect the economy. A very different strategy has been adopted by the cluster including Italy, Spain, Ireland, UK and Netherlands, which acted with social distancing measures at different temporal stages (considering in particular the north european countries of the cluster) but promptly with respect to the first contagion inside national borders. In particular the strategies of Ireland, UK and Netherland was very strict concerning school and workplace closing as well as gathering and international movement restiction, weaker as regards stay at home recommendations, internal movement restriction and transport closing but at the same time relying on a strong information campaign. On the other hand, Italy and Spain sharpened up stay at home and internal movement restrictions. USA, Canada, Greece and Portugal has adopted intermittently social distancing measures in addition with strong social tracing during the second part of the considered period. Lastly, Norway, Denmark, Finland, France, Belgium, Switzerland, Austria has adopted intermediate social distancing measure, in line with other European countries, but without any relevant testing or tracing measure in addition. 
-```{r figs2, fig.align='center', echo=FALSE, fig.cap="\\label{fig:figs2}Clusters map."}
+```{r figs2, fig.align='center', echo=FALSE, fig.cap="\\label{fig:figs2}Clusters map.", eval = F}
 grid.arrange(na2, europe2,                  
              arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
              ncol = 3, nrow=1, widths=c(3,4,2)) 
@@ -201,70 +204,69 @@ ggarrange(restrict, testt, trace, ncol=3, nrow=1, common.legend = TRUE, legend="
 
 # Effect of policies from a global perspective 
 
-Some countries have underestimated the dangerousness of the Coronavirus disease 2019 (COVID-19) and the importance to apply the containment measures. The little concern of some countries regarding the COVID-19 infectious disease is due by many and different reason. Some countries decided to save the economy instead of people lives, i.e., it is a method to fight a war, in this case the pandemic war. 
-For that, we want to analyze which coutries adopt the ``optimal'' policy measures to contain the contagion of COVID-19. Thanks to the @Oxford data sets, we know which type of measures each goverment take and when. The indicators of government response considered are $17$ in total, that can be resumed in indicators of lockdown/social distancing, contact tracing, movement restrictions, testing policy, public health measures, and governance and socio-economic measures.
+Some countries have underestimated the dangerousness of the Coronavirus disease 2019 (COVID-19) and the importance of applying the containment measures. The little concern of some countries regarding the COVID-19 infectious disease is due to many and different reasons. Some countries decided to save the economy instead of people's lives as a method of responding to war; in this case, a pandemic war.
 
-Therefore, some variables as the number of hospital beds are considered from [OECD](http://www.oecd.org/) in order to have some additional covariates that can be influence the variation in government responses to COVID-19. 
+For that, we want to analyze which countries adopt the "optimal" policy measures to contain the contagion of COVID-19. Thanks to the @Oxford data sets, we know which actions each government took and when. The indicators of government response considered are $17$ in total, which can be resumed in indicators of a lockdown/social distancing measures, contact tracing measures, movement restrictions, testing policy, public health measures, and governance and socio-economic measures.
 
-We restrict the wide range of responses to COVID-19 from governments around the countries analyzed in Section 3, i.e., Korea, Singapore, Germany, Canada, Sweden, Greece, Portugal, Spain, United States of America, Irland, United Kingdom, Italy, Netherlands, Austria, Switzerland, Finland, Norway, Denmark, and France.
+In addition, some variables as the size of the population are considered from the [World Bank Open Data](https://data.worldbank.org/) to have some additional covariates that can influence the variation in government responses to COVID-19.
 
-The daily number of active person is analyzed as measure of COVID-19 situation. Being a count variable, we decide to use a Negative Binomial Regression in order to correct also for the possible overdispersion. Therefore, the hierarchical struture induced by the nested structure of countries inside the clusters and by the repeated measures statement. For that, we think to use a generalized mixed model with family negative binomial. The countries information as well as the clusters and date information are used as random effects in our model.
+We restrict the full range of responses to COVID-19 from governments around the countries analyzed in Section 3, i.e., Korea, Singapore, Germany, Canada, Sweden, Greece, Portugal, Spain, United States of America, Irland, United Kingdom, Italy, Netherlands, Austria, Switzerland, Finland, Norway, Denmark, and France.
 
-So, the aim is to understand how the lockdown policies influences the contagions. We consider the aligned data respect to the first confirmed case, we have the following situation:
+The daily number of active persons is analyzed as a measure of the COVID-19 situation, i.e., the number of confirmed minus the number of deaths minus the number of recovered. Being a count variable, we decide to use a Negative Binomial Regression, also correcting for the possible overdispersion. Therefore, the hierarchical structure is induced by the nested structure of countries inside the clusters and by the longitudinal structure. For that, we decide to use a generalized mixed model with family negative binomial. The countriea, clusters, and date's information are supposed to be used as random effects in the model. The indicators from @Oxford and the demographic/economic/health variables from the [World Bank Open Data](https://data.worldbank.org/) enter as fixed effect in the model.
 
-```{r, include=FALSE}
-load(paste0(mypath, "Presentation/Data/out.RData"))
-load(paste0(mypath, "Code/Angela/Data/var.RData"))
-```
+So, the aim is to understand how the lockdown policies influence the number of active people. The observations are aligned concerning the first active case across the countries to have observations directly comparable from a longitudinal point of view. The following plot represents the number of active people during $131$ days for each countries, and the corresponding mean value of the clusters.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
+gd <- dat %>% 
+  group_by(Clusters, date2) %>% 
+  mutate(active_group = round(mean((active/pop)*1000),3) )
 
-p1 <- ggplot(dat, aes(x = date, y = active, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Date") + xlab("Confirmed")
+gd <- gd %>% 
+  mutate(active_over_pop_1000 = round((active/pop)*1000,3))
 
-div(ggplotly(p1), align = "center")
+a <- ggplot(gd, aes(x = as.integer(date2), y = active_over_pop_1000, color = Clusters)) +
+  geom_line(aes(group = id), alpha = .7) +
+  geom_smooth(aes(x = as.integer(date2), y =  active_group, color = Clusters),method = 'loess',formula = 'y ~ x',se = T,size = 1.5) +
+  theme_classic()  + ylab("Active/pop per 1000") + xlab("Days after first case") + xlim(0,max(as.integer(gd$date2)))
+#  +scale_x_date(date_labels = "%b %d")
+a <- ggplotly(a, tooltip = c("id", "active_over_pop_1000"))
+
+a$x$data[[1]]$name <- c(paste0(Cl1, collapse = " "))
+a$x$data[[2]]$name <- c(paste0(Cl2, collapse = " "))
+a$x$data[[3]]$name <- c(paste0(Cl3, collapse = " "))
+a$x$data[[4]]$name <- c(paste0(Cl4, collapse = " "))
+a$x$data[[5]]$name <- c(paste0(Cl5, collapse = " "))
+
+
+div(a %>% layout(legend = list(orientation = "h", y =-.2)), align = "center")
 ```
 
-Also, we lag the number of active respect to $14$ days, in order to consider the influences of the restrictions imposed at time $t$ on number of active at time $t+14$, in order to make a correct impact. The observations are aligned respect to the first confirmed case across the countries, in order to have observations directly comparable in a longitudinal point of view.
+The temporal variability between countries and clusters is clear, as confirmation about the decision to use the generalized mixed model.
 
 ## Exploratory Analysis {.tabset}
 
-The set of covariates considered in this analysis can be divided into three main area:
+The set of confounders considered in this analysis can be divided into three main areas:
 
-  1. Longitudinal economic variables;
+  1. **Longitudinal economic** variables from @Oxford;
 
-  2. Longitudinal health vystem variables;
+  2. **Longitudinal health system** variables from @Oxford;
   
-  3. Fixed demographic/economic/health variables.
+  3. **Fixed demographic/economic/health variables** from the [World Bank Open Data](https://data.worldbank.org/).
   
   
-### Economic Variables
+### Longitudinal economic Variables
+
+We analyze four economic variables from @Oxford:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
 tab_EC <- data.frame(Name = c("Income Support", "Debt/contract relief for households", "Fiscal measures", "International support"), Measurement = c("Ordinal", "Ordinal", "USD", "USD"), Description = c("Government income support to people that lose their jobs", "Government policies imposed to freeze financial obligations", "Economic fiscal stimuli", "monetary value spending to other countries") )
 knitr::kable(tab_EC)
 ```
 
-```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p2 <- dat %>% ggplot(aes(x=date, y=E1_Income_support, group=Clusters, color=Clusters)) +
-  geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Income Support") + xlab("Date")
-
-p3 <- dat %>% ggplot(aes(x=date, y=E2_Debt_contract_relief, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + theme(title = element_blank()) + scale_x_date(date_labels = "%b %d") + ylab("Debt Contract Relief") + xlab("Date")
-
-p2 <- ggplotly(p2, tooltip = c("x", "y", "Clusters"))
-p2$x$data[[1]]$showlegend <- FALSE
-p2$x$data[[2]]$showlegend <- FALSE
-p2$x$data[[3]]$showlegend <- FALSE
-p2$x$data[[4]]$showlegend <- FALSE
-p2$x$data[[5]]$showlegend <- FALSE
-p2 <- hide_legend(p2)
-p3 <- ggplotly(p3, tooltip = c("x", "y", "Clusters"))
-div(subplot(p2,p3), align = "center")
-```
-
-We will combine these two first economic variables into one continous variables using the Polychoric Principal Component Analysis, in order to diminuish the number of covariates inside the model, having $9$ ordinal policies lockdown covariates. 
+However, having $9$ ordinal policies lockdown covariates, the two first economic variables are combined into one continuous variable using the Polychoric Principal Component Analysis, to diminish the number of covariates inside the model. 
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-pca_EC <- polychoric(dat[,var_EC[1:2]])
+quiet(pca_EC <- polychoric(dat[,var_EC[1:2]]),all = T)
 matPCA_ec <- cbind(rep(0,2),pca_EC$tau)
 dat$E1_Income_support_f <- as.factor(dat$E1_Income_support)
 dat$E1_Income_support_f <- recode_factor(dat$E1_Income_support_f,
@@ -281,141 +283,220 @@ dat$E2_Debt_contract_relief_f <- recode_factor(dat$E2_Debt_contract_relief_f,
 dat$E2_Debt_contract_relief_f <- as.numeric(dat$E2_Debt_contract_relief_f)
 ```
 
-Therefore, the two economic variables in USD are examined and transformed in logarithmic scale in order to de-emphasizes very large values.
-
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p2 <- dat %>% ggplot(aes(x=date, y=E3_Fiscal_measures, group=Clusters, color=Clusters)) +
-  geom_smooth(method = 'loess',formula='y ~ x') + scale_x_date(date_labels = "%b %d") + ylab("Fiscal Measures") + xlab("Date")
+p2 <- dat %>% ggplot(aes(x=as.integer(date2), y=pca_EC, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Economics PCA") + xlab("Days after first case")+ xlim(0,max(as.integer(dat$date2))) + theme_classic() 
 
-p3 <- dat %>% ggplot(aes(x=date, y=E4_International_support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x') + theme(title = element_blank()) + scale_x_date(date_labels = "%b %d") + ylab("International Support") + xlab("Date")
+a <- ggplotly(p2, tooltip = c("id", "E1_Income_support"))  
 
-p2 <- ggplotly(p2, tooltip = c("x", "y", "Clusters"))
-p2$x$data[[1]]$showlegend <- FALSE
-p2$x$data[[2]]$showlegend <- FALSE
-p2$x$data[[3]]$showlegend <- FALSE
-p2$x$data[[4]]$showlegend <- FALSE
-p2$x$data[[5]]$showlegend <- FALSE
-p2 <- hide_legend(p2)
-p3 <- ggplotly(p3, tooltip = c("x", "y", "Clusters"))
-div(subplot(p2,p3), align = "center")
-
-#Log transformation
-dat$E3_Fiscal_measures_log <- log(dat$E3_Fiscal_measures +1)
-dat$E4_International_support <- ifelse(is.na(dat$E4_International_support), 0, dat$E4_International_support)
-dat$E4_International_support_log <- log(dat$E4_International_support +1)
+a$x$data[[1]]$name <- c(paste0(Cl1, collapse = " "))
+a$x$data[[2]]$name <- c(paste0(Cl2, collapse = " "))
+a$x$data[[3]]$name <- c(paste0(Cl3, collapse = " "))
+a$x$data[[4]]$name <- c(paste0(Cl4, collapse = " "))
+a$x$data[[5]]$name <- c(paste0(Cl5, collapse = " "))
+p2 <- a %>% layout(legend = list(orientation = "h", y =-.2))
+div(p2, align = "center")
 ```
 
-For further details about the definition of the economic variables, please see
+The Economic PCA has a temporal pattern, with more considerable variability near the last days of observations. Korea and Singapore's population received less money from the government than the other countries. The European ones are the best as financial support to society.
 
-### Demographic/Fixed variables
+Therefore, the USD's two economic variables are examined and transformed into a logarithmic scale to de-emphasize large values.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p <- ggplot(dat, aes(x=Clusters, y=log(pop), fill=Clusters)) + geom_boxplot() 
+p2 <- dat %>% ggplot(aes(x=as.integer(date2), y=E3_Fiscal_measures, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Fiscal Measures in log scale") + xlab("Days after first case")+ xlim(0,max(as.integer(dat$date2))) + theme_classic() 
 
-ggplotly(p)
+a <- ggplotly(p2, tooltip = c("id", "E3_Fiscal_measures_log"))  
 
+a$x$data[[1]]$name <- c(paste0(Cl1, collapse = " "))
+a$x$data[[2]]$name <- c(paste0(Cl2, collapse = " "))
+a$x$data[[3]]$name <- c(paste0(Cl3, collapse = " "))
+a$x$data[[4]]$name <- c(paste0(Cl4, collapse = " "))
+a$x$data[[5]]$name <- c(paste0(Cl5, collapse = " "))
+p2 <- a %>% layout(legend = list(orientation = "h", y =-.2))
+div(p2, align = "center")
 ```
 
-### Health variables
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+p2 <- dat %>% ggplot(aes(x=as.integer(date2), y=E4_International_support, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("International support") + xlab("Days after first case")+ xlim(0,max(as.integer(dat$date2))) + theme_classic() 
+
+a <- ggplotly(p2, tooltip = c("id", "E4_International_support"))  
+
+a$x$data[[1]]$name <- c(paste0(Cl1, collapse = " "))
+a$x$data[[2]]$name <- c(paste0(Cl2, collapse = " "))
+a$x$data[[3]]$name <- c(paste0(Cl3, collapse = " "))
+a$x$data[[4]]$name <- c(paste0(Cl4, collapse = " "))
+a$x$data[[5]]$name <- c(paste0(Cl5, collapse = " "))
+p2 <- a %>% layout(legend = list(orientation = "h", y =-.2))
+div(p2, align = "center")
+```
+
+The fiscal measure and international support variables have a large within-clusters variability. As we will see, these two variables will not enter into the final model.
+
+For further details about the definition of the economic variables, please see the [BSG Working Paper Series](https://www.bsg.ox.ac.uk/sites/default/files/2020-05/BSG-WP-2020-032-v5.0_0.pdf).
+
+### Demographic/economic/health system fixed variables
+
+We analyze $8$ variables from the [World Bank Open Data](https://data.worldbank.org/) that are fixed along the temporal dimension:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-tab_H <- data.frame(Name = c("Emergency Investment in healthcare", "Investment in vaccines"), Measurement = c("USD", "USD"), Description = c("Short-term spending on, e.g, hospitals, masks, etc ", "Announced public
-spending on vaccine development") )
+tab_FIX <- data.frame(Name = c("Population", "Population ages 65 and above (% of total population)", "Population density (people per sq. km of land area)", "Hospital beds (per 1,000 people)", "Death rate, crude (per 1,000 people)", "GDP growth (annual %)", "Urban population (% of total population)", "Surface area (sq. km)"), Measurement = c("Numeric", "Numeric", "Numeric", "Numeric","Numeric", "Numeric", "Numeric", "Numeric"))
+knitr::kable(tab_FIX)
+```
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+p1 <- ggplot(dat, aes(x=Clusters, y=log(pop), fill=Clusters)) + geom_boxplot() + ylab("Population in log scale") +
+  theme(legend.position = "none")
+p2 <- ggplot(dat, aes(x=Clusters, y=pop_65, fill=Clusters)) + geom_boxplot() + theme(legend.position = "none") + ylab("Population ages 65 and above per 1000")
+
+p1 <- ggplotly(p1)
+p2 <- ggplotly(p2)
+
+div(subplot(p1,p2, shareY = FALSE,titleY = T), align = "center")
+```
+
+Korea and Singapore seem to be the two youngest countries; it could be a reason for their low number of active people during the pandemic period.
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+
+p1 <- ggplot(dat, aes(x=Clusters, y=pop_density, fill=Clusters)) + geom_boxplot() + theme(legend.position = "none") + ylab("Population density per sq.km")
+
+p2 <- ggplot(dat, aes(x=Clusters, y=hosp_beds, fill=Clusters)) + geom_boxplot() + ylab("Hospital beds per 1000") +
+  theme(legend.position = "none")
+
+p1 <- ggplotly(p1)
+p2 <- ggplotly(p2)
+
+div(subplot(p1,p2, shareY = FALSE,titleY = T), align = "center")
+```
+
+The population density of the first Cluster seems weird, it is due by the Singapore situation. Probably, the number of hospital beds are directly associated.
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+
+p1 <- ggplot(dat, aes(x=Clusters, y=pop_death_rate, fill=Clusters)) + geom_boxplot() + theme(legend.position = "none") + ylab("Death rate per 1000")
+
+p2 <- ggplot(dat, aes(x=Clusters, y=log(gdp), fill=Clusters)) + geom_boxplot() + ylab("gdp in log scale") +
+  theme(legend.position = "none")
+
+p1 <- ggplotly(p1)
+p2 <- ggplotly(p2)
+
+div(subplot(p1,p2, shareY = FALSE,titleY = T), align = "center")
+```
+
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+
+p1 <- ggplot(dat, aes(x=Clusters, y=pop_urban_log, fill=Clusters)) + geom_boxplot() + theme(legend.position = "none") + ylab("Urban population in log scale")
+
+p2 <- ggplot(dat, aes(x=Clusters, y=surface_area_log, fill=Clusters)) + geom_boxplot() + ylab("Surface area in log scale") +
+  theme(legend.position = "none")
+
+p1 <- ggplotly(p1)
+p2 <- ggplotly(p2)
+
+div(subplot(p1,p2, shareY = FALSE,titleY = T), align = "center")
+```
+
+Another time the Singapore situation is clear analyzing the first Cluster. We have a large density population, so lower surface area than the ones of the other countries.
+
+### Longitudinal health system variables
+
+We analyze $2$ health systems' variables from @Oxford:
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
+tab_H <- data.frame(Name = c("Emergency Investment in healthcare", "Investment in vaccines"), Measurement = c("USD", "USD"), Description = c("Short-term spending on, e.g, hospitals, masks, etc ", "Announced public spending on vaccine development") )
 knitr::kable(tab_H)
 ```
 
-```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p <- dat %>% ggplot(aes(x=date2, y=H4_Emergency_investment_in_healthcare, group=Clusters, color=Clusters)) +
-  geom_smooth() 
-
-ggplotly(p)
-```
+The set of the health systems' variables are transformed into one continuous variable using the Polychoric Principal Component Analysis, in order to reduce the number of covariates in the model.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-p <- dat %>% ggplot(aes(x=date2, y=H5_Investment_in_vaccines, group=Clusters, color=Clusters)) +
-  geom_smooth() 
+p2 <- dat %>% ggplot(aes(x=as.integer(date2), y=pca_hs, group=Clusters, color=Clusters)) + geom_smooth(method = 'loess',formula='y ~ x')  + ylab("Health support PCA") + xlab("Days after first case")+ xlim(0,max(as.integer(dat$date2))) + theme_classic() 
 
-ggplotly(p)
+a <- ggplotly(p2, tooltip = c("id", "E4_International_support"))  
+
+a$x$data[[1]]$name <- c(paste0(Cl1, collapse = " "))
+a$x$data[[2]]$name <- c(paste0(Cl2, collapse = " "))
+a$x$data[[3]]$name <- c(paste0(Cl3, collapse = " "))
+a$x$data[[4]]$name <- c(paste0(Cl4, collapse = " "))
+a$x$data[[5]]$name <- c(paste0(Cl5, collapse = " "))
+p2 <- a %>% layout(legend = list(orientation = "h", y =-.8))
+div(p2, align = "center")
 ```
 
-pca.
+## Model {.tabset}
 
+The aim is to model the number of active people, i.e., confirmed - deaths - recovered, after $14$ days, when the lockdown policies were applied. Therefore, the number of **active people lagged** to $t+14$ days, and an **offset term** representing the number of active people at time $t$ are considered to analyze the influences of the restrictions imposed at time $t$ on the number of active at time $t+14$.
 
-## Model
+The data has a **three-level structure**. The variability of the data comes from nested sources: countries are nested within clusters, and the observations are repeated across time, i.e., longitudinal data.
 
-The data are observed for each country nested within date. 
+For that, the mixed model approach is considered to exploit the different types of variability coming from the hierarchical data structure. At first, the Intraclass Correlation Coefficient (ICC) is computed:
 
-- Two-level model: the units of analysis (Level 1), countries, are nested within clusters (Level 2), date;
+$$
+ICC_{date; active} = 0.0936 \quad ICC_{Countries; Active} = 0.4015 \quad ICC_{Clusters; Active} = 0.0951 
+$$
 
-- The variability of the data comes from nested sources;
+```{r, echo = FALSE, warning= F, comment= F}
+#ICCest(date2, active, dat) 
+#ICCest(id, active, dat) 
+#ICCest(Clusters, active, dat)
+```
 
-- The Intraclass Correlation Coefficient (ICC) is equal to $0.3910876$ for date, equals $0.04668614$ for id and $ 0.02533497$ for Clusters.
+Therefore, the $40.15\%$ of the data's variance is given by the random effect of the countries, while the $9.36\%$ by the temporal effect and $9.51\%$ by the clusters effect. Therefore, the mixed model requires a random effect for the countries; the other two effects is selected using the conditional AIC.
 
-lot to understand the variability respect date
+The dependent variable is the number of active persons; therefore, a count data model is considered. To control the overdispersion of our data, the negative binomial regression with Gaussian-distributed random effects is performed using the glmmTMB R package developed by @glmmTMB. Let $n$ countries, and country $i$ is measured at $n_i$ time points $t_{ij}$. The active person $y_{ij}$ count at time $t+14$, where $i=1,\dots, n$ and $j = 1, \dots,n_i$, follows the negative binomial distribution:
+
+$$y_{ij} \sim NB(y_{ij}|\mu_{ij}, \theta) = \dfrac{\Gamma(y_{ij}+ \theta)}{\Gamma(\theta) y_{ij}!} \cdot \Big(\dfrac{\theta}{\mu_{ij} + \theta}\Big)^{\theta}\cdot \Big(\dfrac{\mu_{ij}}{\mu_{ij} + \theta}\Big)^{y_{ij}}$$
+where $\theta$ is the dispersion parameter that controls the amount of overdispersion, and $\mu_{ij}$ are the means. The means $\mu_{ij}$ are related to the other variables via the logarithm link function:
+
+$$\log(\mu_{ij}) = \log(T_{ij}) + X_{ij} \beta + Z_{ij} b_i \quad b_i \sim \mathcal{N}(0,\psi)$$
+      
+where $\log(T_{ij})$ is the offset that corrects for the variation of the count of the active person at time $t$, and $\text{E}(y_{ij}) = \mu_{ij}$, $\text{Var}(y_{ij}) = \mu_{ij} (1 + \mu_{ij}\theta)$ from @Hardin. The $X_{ij}$ is the design matrix for the fixed effects, i.e., economic, demographic and health variables, and $\beta$ the corresponding set of fixed parameters. In the same way, $Z_{ij}$ is the design matrix describing the random effect regarding the countries and the date, and $b_i$ the corresponding parameter.
+
+After some covariates selection steps and random effects selection, the final model returns these estimations for the fixed effects:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-abc<-aggregate(active ~id, dat, mean)
-bdata <- dat
-bdata <- merge(bdata,abc,by="id")
-bdata$colorBox <- ifelse(bdata$active.y>= mean(na.omit(bdata$active.x)), "#56B4E9", "#009E73")
-
-bdata$id <- as.factor(bdata$id)
-ggplot(bdata, aes(x=id, y=active.x, fill = colorBox)) +
-    geom_boxplot() +
-  scale_color_manual(values=rainbow(6))+ theme(legend.position="none")
+outMod <- summary(mod1)
+outCoef <- outMod$coefficients$cond
+knitr::kable(outCoef, digits = 3)
 ```
 
-and respect Clusters:
+while the variance for the random effects are equals:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
-abc<-aggregate(active ~Clusters, dat, mean)
-bdata <- dat
-bdata <- merge(bdata,abc,by="Clusters")
-bdata$colorBox <- ifelse(bdata$active.y>= mean(na.omit(bdata$active.x)), "#56B4E9", "#009E73")
-
-bdata$Clusters <- as.factor(bdata$Clusters)
-ggplot(bdata, aes(x=Clusters, y=active.x, fill = colorBox)) +
-    geom_boxplot() +
-  scale_color_manual(values=rainbow(6))+ theme(legend.position="none")
+outCoefRE <- as.data.frame(rbind(outMod$varcor$cond$id[1],outMod$varcor$cond$date2[1]))
+rownames(outCoefRE) <- c("Country", "Date")
+colnames(outCoefRE) <- c("Variance")
+knitr::kable(outCoefRE, digits = 3)
 ```
 
-and id:
+We drop off the random effect associated with the Clusters having low variability, and the conditional AIC equals the one computed without the variable Clusters as a random intercept.
 
-```{r, echo = FALSE, comment = F, warning= F, silent = T}
-abc<-aggregate(active ~date2, dat, mean)
-bdata <- dat
-bdata <- merge(bdata,abc,by="date2")
-bdata$colorBox <- ifelse(bdata$active.y>= mean(na.omit(bdata$active.x)), "#56B4E9", "#009E73")
-
-bdata$date2 <- as.factor(bdata$date2)
-ggplot(bdata, aes(x=date2, y=active.x, fill = colorBox)) +
-    geom_boxplot() +
-  scale_color_manual(values=rainbow(6))+ theme(legend.position="none")
+```{r, echo = FALSE, comment = F, warning= F, silent = T, eval = F}
+#r.squaredGLMM(mod1)
+#lognormal 0.2873722 0.8999491
+#trigamma  0.2457431 0.7695816
 ```
 
-**How to choose the random and fixed part?**
+The marginal $R^2$, i.e., the variance explained by the fixed effects, equals $0.28$, while the conditional one, i.e., the variance explained by the entire model, including both fixed and random effects, equals $0.89$ considering the lognormal approximation @Nakagawa. 
 
-The problem is much more complicated than in linear regression because selection on the covariance structure is not straightforward due to computational issues and boundary problems arising from positive semidefinite constraints on covariance matrices.
+Therefore, the model seems correctly formulated. We will analyze the effects related to the following variables:
 
--Conditional AIC (Package cAIC4): The conditional AIC is also appropriate for choosing between a simple null model without any random effects and a complex model incorporating random effects,
+1. The fixed effect of the lockdown policies;
 
--Boostrap (R Package pbkrtest): Model comparison of nested models using parametric bootstrap methods. Implemented for some commonly applied model types.
+2. The fixed effect of the clusters;
 
-Finally the model is:
+3. The fixed effect of the combination of lockdown policies and clusters;
 
-```{r, echo = FALSE, comment = F, warning= F, silent = T}
-summary(mod1)
-```
+3. The random effect of the countries;
 
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-a <- ggplot(dat, aes(x = date, y = active/1000, group = Clusters, color = Clusters)) + geom_smooth(method = 'loess',formula = 'y ~ x') + scale_x_date(date_labels = "%b %d") + theme_classic() + ylab("Active per 1000") + xlab("Date") 
+### LOCKDOWN POLICIES
 
-ggplotly(a)
-```
+In the following plot, we can see the effect of lockdown policies on predicted actives after 14 days.
 
-```{r,echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+```{r,echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center",fig.width=10,fig.height=5}
 out0 <- as.data.frame(ggeffect(mod1, terms = "workplace_closingF"))
-out0$Value <- c("No measures", "Recommend closing or work from home", "require closing for some sector" ,"Require closing all-but-essential workplaces")
+out0$Value <- c("No measures", "Recommend closing or work from home", "Require closing for some sector" ,"Require closing all-but-essential workplaces")
 out1 <-as.data.frame(ggeffect(mod1, terms = "gatherings_restrictionsF"))
 out1$Value <- c("No measures", "> 1000", "100-1000 people", "10-100 people", "< 10 people")
 out2 <- as.data.frame(ggeffect(mod1, terms = "transport_closingF"))[c(1,3),]
@@ -436,47 +517,230 @@ OUT$Policies <- c(rep("Workplace Closing", nrow(out0)),
                   rep("Tracing", nrow(out5)))
 
 colnames(OUT)[1] <- "Strength"
+OUT$Policies <- as.factor(OUT$Policies)
+OUT$Strength <- as.factor(OUT$Strength)
 
 #OUT$cols <- c("slateblue1", "slateblue2", "slateblue3", "slateblue4")
 
-ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
+quiet(ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
   geom_bar(stat = "summary", fun = "mean", 
            position = position_dodge(width = 0.9)) +
-  scale_y_continuous(name = "Predicted counts of Active People after 14 days", limits = c(0, 1700))+ geom_errorbar(stat = "summary", fun.data = "mean_sdl", 
-                fun.args = list(mult = 2),
-                position =  position_dodge(width =1)) +
-  geom_text(aes(label=Value, group = Strength),     hjust = -0.1, size = 3,
+  scale_y_continuous(name = "Effect of policies on predicted actives after 14 days", limits = c(0, 2500))+ geom_errorbar(stat = "summary", fun.data = "mean_sdl", 
+                fun.args = list(mult = 2),na.rm = FALSE,
+                position =  position_dodge(width =2)) +
+  geom_text(aes(label=OUT$Value, group = OUT$Strength),   hjust = -0.2, size = 3,
             position = position_dodge(width = 1),
             inherit.aes = TRUE)  + coord_flip() + scale_fill_viridis(discrete=T) +
-  theme_minimal() + ylab("") 
+  theme_minimal() + ylab(""), all = TRUE) 
 ```
 
-```{r echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-load(paste0(mypath, "Presentation/Data/plot_map.RData"))
+We can note that in general, the strong lockdown policies work respect to impose no measure. For example, if the government prohibits most citizens from using it, the number of active people diminishes around  $39.4\%$ respect to imposing no public transport measures. Also, we can note that weak gatherings restrictions still work concerning impose no action. For example, restrictions on gatherings between 100-1000 people diminish the number of active persons around $71.62\%$. However, we can see a reverse situation analyzing the effects regarding the variables describing the testing and tracing policies. Probably, strong testing and tracing policies lead to discovering more infected people.
+
+The following plot represents the effects of two policies, i.e., workplace closing and gatherings restriction, on predicted active people $14$ days after applying these policies.
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+eff1 <- ggeffect(mod1, terms = c("workplace_closingF [0, 3]", "gatherings_restrictionsF"))
+attr(eff1, "legend.title") <- "Gatherings Restrictions"
+attr(eff1,"title") <- "Workplace closing"
+
+levels(eff1$group) <-  c("No measures", "> 1000", "100-1000 people", "10-100 people", "< 10 people")
+
+quiet(p1 <- plot(eff1)+ ylab("Effect of policies on predicted actives after 14 days")+
+  scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
+  theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
+                                         axis.title.x = element_blank()), all = TRUE)
+
+eff2 <- ggeffect(mod1, terms = c("testing_policyF", "contact_tracingF", "gatherings_restrictionsF"))
+attr(eff2, "legend.title") <- "Contact Tracing"
+attr(eff2,"title") <- "Testing Policy"
+
+levels(eff2$group) <-  c("No measures", "Limited", "Comprehensive")
+
+quiet(p2 <- plot(eff2)+ ylab("Effect of policies on predicted actives after 14 days")+
+  scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
+  theme_minimal(base_size = 12)  + theme(plot.title =element_text(),
+                                         axis.title.x = element_blank()), all = TRUE)
+
+p1
+```
+
+The combination of gatherings restrictions and workplace closing works, the number of actives decreases, also if the weak limit on reunion is applied.
+
+In the same way, the following plot represents the effects of the combination of tracing and testing policies.
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+p2
+```
+
+These two policies lead to an increase in the number of active people recorded.
+
+### CLUSTERS
+
+The following plot represents the effects of the clusters on predicted actives after $14$ respect to the cluster associated with Italy.
+
+```{r echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+load(paste0(path, "Code/Angela/Data/plot_mapAngela.RData"))
 grid.arrange(na2, europe2,                 
              arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
              ncol = 3, nrow=1, widths=c(3,4,2))    
 ```
 
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-load(paste0(mypath, "Presentation/Data/plot_mod.RData"))
+We can see that Korea and Singapore are the best countries that acted appropriately, while Sweden, Germany, Portugal, and Greece are better than the other European countries. Finally, the USA and Canada are better than the other European countries except for Sweden and Germany. The following multiple comparison procedure adjsted by Tukey's pvalues adjustment.
 
-subplot(ggplotly(p1, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = ""),
- ggplotly(p2, tooltip = c("colour", "y"))%>% layout(showlegend = FALSE,title = ""), 
-ggplotly(p3, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "Stay Home           Testing            Tracing"), shareY = T
-) 
+```{r echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+comp <- summary(comp_cluster)
+knitr::kable(data.frame(Std = comp$test$sigma, Test = comp$test$tstat, Pvalues = comp$test$pvalues))
 ```
 
+### INTERACTION LOCKDOWN POLICIES AND CLUSTERS
+
+In this Section, the effects of the interaction between each significant lockdown policy and clusters are examined.
+
+#### Testing policies
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
+load(paste0(path, "Code/Angela/Data/plot_mod.RData"))
+
+a <- ggplotly(pTest, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+#### Contact Tracing
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+a <- ggplotly(pCont, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+#### Gatherings Restrictions
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+a <- ggplotly(pGath, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+#### Stay Home Restrictions
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+a <- ggplotly(pSH, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+#### Workplace Closing
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+a <- ggplotly(pW, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+#### Transport Closing
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
+a <- ggplotly(pTr, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
+
+nLev <- length(a$x$data)
+
+for(i in 1:nLev){
+  a$x$data[[i]]$marker$color <- a$x$data[[i]]$marker$line$color
+}
+
+div(a, align = "center") 
+```
+
+### COUNTRIES
+
+In this Section, the countries' effects on the number of active people are analyzed, considering $4$ type of scenarios:
+
+1. **No measures** of lockdown, tracing and testing policies;
+
+2. **Maximum restriction** of lockdown, tracing and testing policies;
+
+3. Only maximum level of **contact tracing and testing policies**;
+
+4. Only maximum restriction of **lockdown/social distancing policies**.
+
+The effects are computed considering $100$ and $1000$ active people at time $t$, when the policies are applied. The other covariates are fixed and equal to the mean value.
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+path <- "~/GitHub/Lockdown_policies_COVID19/"
+load(paste0(path, "Code/Angela/Data/plot_ranef.RData"))
+pNL
+```
+
+If the government doesn't impose any measure to contrast the coronavirus, the number of active people after $14$ will increase, in particular in the fourth cluster, i.e., Spain, Italy, Irland, United Kingdom, and the Netherlands. The situation gets worst if the number of active people at time $t$ is large.
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+pALL
+```
+
+The situation gets better if the government applied the strong level of restrictions about social distancing and the strong levels of testing and tracing policies. However, the increasing of the number of active people due to testing and tracing policies influences the analysis of the effects, as you can see in the following plot:
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+pTT
+```
+
+The best situation, as expected is the follows:
+
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+pOL
+```
+
+i.e., the governements apply the strong levels of all lockdown policies, in this case the testing and tracing variables are imposed to $0$.
+
+## To sum up
+
+ 1. Lockdown policies work! respect to impose no measure in general;
+ 
+ 2. Weak gatherings restrictions still work, i.e., restrictions on gatherings between 100-1000 people;
+ 
+ 3. Strong Testing and Tracing policies lead to discovering more infected people;
+ 
+ 4. Korea and Singapore are the best countries that acted properly;
+ 
+ 5. Sweden, Germany, Portugal, and Greece better than the other UE countries;
+ 
+ 6. The USA, and Canada better than the other UE countries except for Sweden and Germany.
 
 # Italian lockdown and regional outcomes
 
-
 # Supplementary materials
 
-All the codes used for this analysis is available on [Github](https://github.com/angeella/Statistical_Consulting).
+All the codes used for this analysis is available on [Github](https://github.com/angeella/Lockdown_policies_COVID19). The report was written by rmarkdown, fully reproducible. You can find the rmakrdown file in [Github](https://github.com/angeella/Lockdown_policies_COVID19/Report).
 
-
-
-
-
-
+# References
