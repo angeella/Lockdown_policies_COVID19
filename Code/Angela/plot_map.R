@@ -269,7 +269,7 @@ pNL <-  ggplot(predRE) +
   geom_point(aes(x = id, y = predicted, shape =active, color = Clusters)) + 
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   ylab("Predicted Number of Actives after 14 days") + theme_minimal() +
-  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000)
+  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000) +labs(title="No measures", x = "Countries")
 
 #Combination si testing and tracing max no lockdown
 
@@ -306,7 +306,7 @@ pTT <- predRE %>%    # First sort by val. This sort the dataframe but NOT the fa
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   ylab("Predicted Number of Actives after 14 days") + theme_minimal()  +
   geom_hline(yintercept = 100) + geom_hline(yintercept = 1000) +
-  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000)
+  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000) +labs(title="Only Testing and Tracing", x = "Countries")
 
 #Testing Tracing Stay Home and Gathering
 
@@ -342,7 +342,8 @@ pOL <- predRE %>%    # First sort by val. This sort the dataframe but NOT the fa
   geom_point(aes(x = id, y = predicted, shape =active, color = Clusters)) + 
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   ylab("Predicted Number of Actives after 14 days") + theme_minimal()  +
-  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000)
+  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000) +labs(title="All lockdown/social distancing policies", x = "Countries")
+
 
 #all
 
@@ -379,7 +380,7 @@ pALL <- predRE %>%    # First sort by val. This sort the dataframe but NOT the f
   geom_point(aes(x = id, y = predicted, shape =active, color = Clusters)) + 
   scale_color_viridis(discrete=TRUE,  option="A", direction=-1, end=0.9) +
   ylab("Predicted Number of Actives after 14 days") + theme_minimal()  +
-  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000)
+  geom_hline(yintercept = 100) + geom_hline(yintercept = 1000) +labs(title="All policies", x = "Countries")
 
 
 save(pALL, pOL, pNL,pTT, file =paste0(path, "Code/Angela/Data/plot_ranef.RData"))
