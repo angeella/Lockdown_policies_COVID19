@@ -1,3 +1,8 @@
+###################################################################################
+##############################R0 Index###################################
+###################################################################################
+
+
 R0_compute <- function(state, dataset){
   
   #dat_c <- dataset %>% filter(id == paste0(state)) 
@@ -27,5 +32,25 @@ R0_compute <- function(state, dataset){
   df <- data.frame(date, mean, lower, upper)
   #colnames(df) <- c("date", paste0("mean.", state),paste0("lower.", state),paste0("upper.", state))
   return(df)
+}
+
+#JOIN ALL
+add_R0 <- function(dataset){
+
+  dat <- dataset %>% filter(id != "ASM")
+  id_states <- unique(dat$id)
+  db2 <- list()
+  for(i in 1:length(id_states)){
+    
+    db <- dat %>% filter(id == id_states[i]) 
+    db1 <- R0_compute(state = id_states[i], dataset = dat %>% filter(id == id_states[i]))[,c("date", "mean")]
+    colnames(db1) <- c("date", "R0mean")
+    db2[[i]] <-full_join(db, db1, by = "date")
+  }
+  
+  df <- plyr::ldply(db2, data.frame)
+  
+  
+  return(df)  
 }
 

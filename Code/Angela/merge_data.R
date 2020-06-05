@@ -1,6 +1,15 @@
 ##Load Data
+###################################################################################
+##############################LOAD DB###################################
+###################################################################################
+
+#load covid19 package
 library("COVID19")
+
+#load packages
 source("Angela/packages.R")
+
+
 add.oxford <- function(dataset) {
   dataset$id1 <- dataset$iso_alpha_2
   oxford <- "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/master/data/OxCGRT_latest.csv" %>%
@@ -32,6 +41,7 @@ add.oxford <- function(dataset) {
     left_join(oxford, by=c("id1", "date"))
 }
 
+#select countries
 uno <- c("KOR", "SGP")
 due <- c("DEU", "SWE")
 tre <- c("CAN", "GRC", "PRT","USA")

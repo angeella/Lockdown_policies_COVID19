@@ -1,4 +1,7 @@
-#Compute R0 by likelihood method
+###################################################################################
+##############################R0 index by likelihood method###################################
+###################################################################################
+
 
 #FROM est.R0.TD: Wallinga, J., and P. Teunis. "Different Epidemic Curves for Severe Acute Respiratory Syndrome Reveal Similar Impacts of Control Measures." American Journal of Epidemiology 160, no. 6 (2004): 509.
 #From https://reader.elsevier.com/reader/sd/pii/S1201971220301193?token=13649F14DDE5D4EA34B7E573BC1CE70B6E59FDC26A3659FBD3481B1D0BB647561BB7075EC1C8D16541C8740CAE950940
