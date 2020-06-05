@@ -229,7 +229,7 @@ gd <- dat %>%
 gd <- gd %>% 
   mutate(active_over_pop_1000 = round((active/pop)*1000,3))
 
-a <- ggplot(gd, aes(x = as.integer(date2), y = active_over_pop_1000, color = Clusters)) +
+a <- ggplot(gd, aes(x = as.integer(date2), y = active_over_pop_1000)) +
   geom_line(aes(group = id), alpha = .7) +
   geom_smooth(aes(x = as.integer(date2), y =  active_group, color = Clusters),method = 'loess',formula = 'y ~ x',se = T,size = 1.5) +
   theme_classic()  + ylab("Active/pop per 1000") + xlab("Days after first case") + xlim(0,max(as.integer(gd$date2)))
