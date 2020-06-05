@@ -29,8 +29,6 @@ path <- "~/GitHub/Lockdown_policies_COVID19/"
 source(paste0(path, "Code/Angela/packages.R"))
 load(paste0(path, "Code/Silvia/cluster20paesi.Rdata"))
 load(paste0(path, "Code/Silvia/SAVEPLOTS.Rdata"))
-load(paste0(path, "Code/Angela/Data/out.RData"))
-load(paste0(path, "Code/Angela/Data/var.RData"))
 ```
 
 # Introduction 
@@ -190,7 +188,7 @@ Considering a matrix of 20 countries (rows) of 3 curves (columns or functional f
 The two policies clusters depicts Restriction-based policies on one hand, Tracing and Testing-based policies on the other hand, confirming that these last two policies reflects a common strategy as described above.
 
 The countries clusters are displayed in Figure \ref{figs2}: (South Korea, Singapore), (Germany, Sweden), (USA, Canada, Greece, Portugal), (Italy, Spain, Ireland, UK, Netherlands), (Norway, Denmark, Finland, France, Belgium, Switzerland, Austria). The interpretation can be grasped in Figure \ref{figs3}. South Korea and Singapore political strategy is characterized by the detection and isolation of the positive cases via contact tracing and mild testing policies, without any relevant social distancing action. On the contrary Germany, Sweden strategy was to detect and isolate positive cases via an extensive testing policy strategy, without any strong social distancing measures in order to protect the economy. A very different strategy has been adopted by the cluster including Italy, Spain, Ireland, UK and Netherlands, which acted with social distancing measures at different temporal stages (considering in particular the north european countries of the cluster) but promptly with respect to the first contagion inside national borders. In particular the strategies of Ireland, UK and Netherland was very strict concerning school and workplace closing as well as gathering and international movement restiction, weaker as regards stay at home recommendations, internal movement restriction and transport closing but at the same time relying on a strong information campaign. On the other hand, Italy and Spain sharpened up stay at home and internal movement restrictions. USA, Canada, Greece and Portugal has adopted intermittently social distancing measures in addition with strong social tracing during the second part of the considered period. Lastly, Norway, Denmark, Finland, France, Belgium, Switzerland, Austria has adopted intermediate social distancing measure, in line with other European countries, but without any relevant testing or tracing measure in addition. 
-```{r figs2, fig.align='center', echo=FALSE, fig.cap="\\label{fig:figs2}Clusters map.", eval = F}
+```{r figs2, fig.align='center', echo=FALSE, fig.cap="\\label{fig:figs2}Clusters map."}
 grid.arrange(na2, europe2,                  
              arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
              ncol = 3, nrow=1, widths=c(3,4,2)) 
@@ -218,6 +216,12 @@ The daily number of active persons is analyzed as a measure of the COVID-19 situ
 So, the aim is to understand how the lockdown policies influence the number of active people. The observations are aligned concerning the first active case across the countries to have observations directly comparable from a longitudinal point of view. The following Figure represents the number of active people during $131$ days for each countries, and the corresponding mean value of the clusters.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T , fig.cap="\\label{fig:figsA1} Number of active people over population across time for each countries. The mean of each cluster is also displayed."}
+path <- "~/GitHub/Lockdown_policies_COVID19/" 
+source(paste0(path, "Code/Angela/packages.R"))
+load(paste0(path, "Code/Silvia/cluster20paesi.Rdata"))
+load(paste0(path, "Code/Silvia/SAVEPLOTS.Rdata"))
+load(paste0(path, "Code/Angela/Data/out.RData"))
+load(paste0(path, "Code/Angela/Data/var.RData"))
 gd <- dat %>% 
   group_by(Clusters, date2) %>% 
   mutate(active_group = round(mean((active/pop)*1000),3) )
