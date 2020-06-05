@@ -11,6 +11,7 @@ output:
     number_sections: true
     fig_width: 6
     fig_height: 4
+    fig_caption: yes
   pdf_document: null
 graphics: yes
 header-includes: \usepackage{graphicx, amsmath, bm, gensymb}
@@ -214,9 +215,9 @@ We restrict the full range of responses to COVID-19 from governments around the 
 
 The daily number of active persons is analyzed as a measure of the COVID-19 situation, i.e., the number of confirmed minus the number of deaths minus the number of recovered. Being a count variable, we decide to use a Negative Binomial Regression, also correcting for the possible overdispersion. Therefore, the hierarchical structure is induced by the nested structure of countries inside the clusters and by the longitudinal structure. For that, we decide to use a generalized mixed model with family negative binomial. The countriea, clusters, and date's information are supposed to be used as random effects in the model. The indicators from @Oxford and the demographic/economic/health variables from the [World Bank Open Data](https://data.worldbank.org/) enter as fixed effect in the model.
 
-So, the aim is to understand how the lockdown policies influence the number of active people. The observations are aligned concerning the first active case across the countries to have observations directly comparable from a longitudinal point of view. The following plot represents the number of active people during $131$ days for each countries, and the corresponding mean value of the clusters.
+So, the aim is to understand how the lockdown policies influence the number of active people. The observations are aligned concerning the first active case across the countries to have observations directly comparable from a longitudinal point of view. The following Figure represents the number of active people during $131$ days for each countries, and the corresponding mean value of the clusters.
 
-```{r, echo = FALSE, comment = F, warning= F, silent = T}
+```{r, echo = FALSE, comment = F, warning= F, silent = T , fig.cap="\\label{fig:figsA1} Number of active people over population across time for each countries. The mean of each cluster is also displayed."}
 gd <- dat %>% 
   group_by(Clusters, date2) %>% 
   mutate(active_group = round(mean((active/pop)*1000),3) )
@@ -263,7 +264,7 @@ tab_EC <- data.frame(Name = c("Income Support", "Debt/contract relief for househ
 knitr::kable(tab_EC)
 ```
 
-However, having $9$ ordinal policies lockdown covariates, the two first economic variables are combined into one continuous variable using the Polychoric Principal Component Analysis, to diminish the number of covariates inside the model. 
+However, having $9$ ordinal policies lockdown covariates, the two first economic variables are combined into one continuous variable using the Polychoric Principal Component Analysis, to diminish the number of covariates inside the model.
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
 quiet(pca_EC <- polychoric(dat[,var_EC[1:2]]),all = T)
