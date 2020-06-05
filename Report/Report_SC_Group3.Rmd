@@ -702,7 +702,7 @@ In this Section, the countries' effects on the number of active people are analy
 
 The effects are computed considering $100$ and $1000$ active people at time $t$, when the policies are applied. The other covariates are fixed and equal to the mean value.
 
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center",fig.width=10}
 path <- "~/GitHub/Lockdown_policies_COVID19/"
 load(paste0(path, "Code/Angela/Data/plot_ranef.RData"))
 pNL
@@ -710,19 +710,19 @@ pNL
 
 If the government doesn't impose any measure to contrast the coronavirus, the number of active people after $14$ will increase, in particular in the fourth cluster, i.e., Spain, Italy, Irland, United Kingdom, and the Netherlands. The situation gets worst if the number of active people at time $t$ is large.
 
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center",fig.width=10}
 pALL
 ```
 
 The situation gets better if the government applied the strong level of restrictions about social distancing and the strong levels of testing and tracing policies. However, the increasing of the number of active people due to testing and tracing policies influences the analysis of the effects, as you can see in the following plot:
 
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center",fig.width=10}
 pTT
 ```
 
 The best situation, as expected is the follows:
 
-```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center",fig.width=10}
 pOL
 ```
 
