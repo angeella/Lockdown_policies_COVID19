@@ -24,11 +24,9 @@ bibliography: references.bib
 rm(list=ls())
 #Insert your path
 knitr::opts_chunk$set(echo = TRUE)
-#path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
-path <- "~/GitHub/Lockdown_policies_COVID19/" 
+path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
+#path <- "~/GitHub/Lockdown_policies_COVID19/" 
 source(paste0(path, "Code/Angela/packages.R"))
-load(paste0(path, "Code/Silvia/cluster20paesi.Rdata"))
-load(paste0(path, "Code/Silvia/SAVEPLOTS.Rdata"))
 ```
 
 # Introduction 
@@ -45,212 +43,28 @@ Therefore, our goal is two-fold. The aim is to measure the effect of the differe
 In doing so, some issue arises concerning the identification and codification of the different measures undertaken by governments, the analysis related to whether a strategies resemblance can be detected across countries and the measurement of the effects of containment policies on contagion. Thus, after an introductory section explaining data and variables, a second section regards some explanatory analysis facing the codification of containment policies and the strategies resembling patterns.
 The third section deals with the measurement of policies effect from a global perspective, lastly the forth section analyze Italian lockdown and regional outcomes. Conclusion are drawn in the last section. 
 
-#Data and Variables
+# Data and Variables {.tabset}
 
 The data repositories used for this project are *COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University* [^1] for contagion data (@Jhon), and *Oxford COVID-19 Government Response Tracker (OxCGRT)*[^2] for policies tracking (@Oxford), together with *World Bank Open Data Repository* for demographic data.
 
-Contagion data..
+As regards contagion data, we used as main variable the active cases, defined as the total confirmed cases (cumulative confirmed positive cases including presumptive positive) minus total deaths minus total recovered. For further information see @Jhon. 
 
-The *Oxford COVID-19 Government Response Tracker (OxCGRT)* collects all the containment policies adopted by government worldwide by making available information on 11 indicators of government containment responses of ordinal type. These indicators measure policies on a simple scale of severity / intensity and are reported for each day a policy is in place, specifying if they are "targeted", applying only to a sub-region of a jurisdiction, or a specific sector; or "general", applying throughout that jurisdiction or across the economy.
+As regards policies variables, the *Oxford COVID-19 Government Response Tracker (OxCGRT)* collects all the containment policies adopted by government worldwide by making available information on 11 indicators of government containment responses of ordinal type. These indicators measure policies on a simple scale of severity / intensity and are reported for each day a policy is in place, specifying if they are "targeted", applying only to a sub-region of a jurisdiction, or a specific sector; or "general", applying throughout that jurisdiction or across the economy.
 
 The containment ordinal variables considered are:
 
-* __School closing__ records closings of schools and
-universities with levels: 0 - No measures
-1 - recommend closing
-2 - Require closing (only some levels or
-categories, eg just high school, or just
-public schools)
-3 - Require closing all levels.
+```{r, echo = FALSE, comment = F, warning= F, silent = T}
 
-* __Workplace closing__ records closings of
-workplaces with levels:0 - No measures
-1 - recommend closing (or work from
-home)
-2 - require closing (or work from home)
-for some sectors or categories of
-workers
-3 - require closing (or work from home)
-all-but-essential workplaces (e.g. grocery
-stores, doctors).
-
-* __Cancel public
-events__ records cancelling
-public events with levels: 0- No measures
-1 - Recommend cancelling
-2 - Require cancelling.
-
-* __Restrictions on
-gatherings__ records the cut-off
-size for bans on
-private gatherings with levels: 0 - No restrictions
-1 - Restrictions on very large gatherings
-(the limit is above 1000 people)
-2 - Restrictions on gatherings between
-101-1000 people
-3 - Restrictions on gatherings between
-11-100 people
-4 - Restrictions on gatherings of 10
-people or less.
-
-* __Close public
-transport__ records closing of
-public transport with levels: 0 - No measures
-1 - Recommend closing (or significantly
-reduce volume/route/means of
-transport available)
-2 - Require closing (or prohibit most
-citizens from using it).
-
-* __Stay at home
-requirements__ records orders to
-"shelter-in- place"
-and otherwise
-confine to home with levels: 0 - No measures
-1 - recommend not leaving house
-2 - require not leaving house with
-exceptions for daily exercise, grocery
-shopping, and 'essential' trips
-3 - Require not leaving house with
-minimal exceptions (e.g. allowed to
-leave only once a week, or only one
-person can leave at a time, etc.).
-
-* __Restrictions on
-internal
-movement__ records restrictions on
-internal movement with levels: 0 - No measures
-1 - Recommend not to travel between
-regions/cities
-2 - internal movement restrictions in
-place.
-
-* __International
-travel controls__ records restrictions on
-international travel with levels: 0 - No measures
-1 - Screening
-2 - Quarantine arrivals from high-risk
-regions
-3 - Ban on arrivals from some regions
-4 - Ban on all regions or total border
-closure.
-
-* __Public info
-campaigns__ records presence of
-public info
-campaigns with levels: 0 -No COVID-19 public information
-campaign
-1 - public officials urging caution about
-COVID-19
-2 - coordinated public information campaign
-(e.g. across traditional and social media).
-
-* __Testing policy__ describing who can get
-tested by public health system with levels: 0 - No testing policy
-1 - Only those who both (a) have symptoms
-AND (b) meet specific criteria (e.g. key
-workers, admitted to hospital, came into
-contact with a known case, returned from
-overseas)
-2 - testing of anyone showing COVID-19
-symptoms
-3 - open public testing (e.g. "drive through"
-testing available to asymptomatic people).
+tab_EC <- data.frame(Name = c("School closing", "Workplace closing", "Cancel public events", "Restrictions on gatherings", "Close public transport", "Stay at home requirements", "Restrictions on internal movements", "International travel controls", "Public info campaigns","Testing policy", "Contact Tracing Policy"), Measurement = rep("Ordinal", 11), Description = c("Closings of schools and universities", "Closings of workplaces", "Cancelling public events ", "Cut-off size for bans on private gatherings", "Closing of public transport", "Orders to shelter-in-place and otherwise confine to home", "Restrictions on internal movement", "Restrictions on international travel", "Presence of public info campaigns", "Who can get tested by public health system", "Are governments doing contact tracing?"), Category = c("0- No measures 1 - recommend closing 2 - Require closing (only some levels or categories, eg just high school, or just public schools) 3 - Require closing all levels", "0- No measures 1 - recommend closing (or work from home) 2 - require closing (or work from home) for some sectors or categories of workers 3 - require closing (or work from home) all-but-essential workplaces (e.g. grocery stores, doctors)", "0- No measures 1 - Recommend cancelling 2 - Require cancelling", " 0 - No restrictions 1 - Restrictions on very large gatherings (the limit is above 1000 people) 2 - Restrictions on gatherings between 101-1000 people 3 - Restrictions on gatherings between 11-100 people 4 - Restrictions on gatherings of 10 people or less", "0 - No measures 1 - Recommend closing (or significantly reduce volume/route/means of transport available) 2 - Require closing (or prohibit most citizens from using it)", "0 - No measures 1 - recommend not leaving house 2 - require not leaving house with exceptions for daily exercise, grocery shopping, and 'essential' trips 3 - Require not leaving house with minimal exceptions (e.g. allowed to leave only once a week, or only one person can leave at a time, etc.)", "0 - No measures 1 - Recommend not to travel between regions/cities 2 - internal movement restrictions in place",  "0 - No measures 1 - Screening 2 - Quarantine arrivals from high-risk regions 3 - Ban on arrivals from some regions 4 - Ban on all regions or total border closure", "0 -No COVID-19 public information campaign 1 - public officials urging caution about COVID-19 2 - coordinated public information campaign (e.g. across traditional and social media)", "0 - No testing policy 1 - Only those who both (a) have symptoms AND (b) meet specific criteria (e.g. key workers, admitted to hospital, came into contact with a known case, returned from overseas) 2 - testing of anyone showing COVID-19 symptoms 3 - open public testing (e.g. drive through testing available to asymptomatic people)", "0 - No contact tracing 1 - Limited contact tracing - not done for all cases 2 - Comprehensive contact tracing - done for all identified cases"))
+knitr::kable(tab_EC)
+```
 
 
 [^1]: https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data
 [^2]: https://github.com/OxCGRT/covid-policy-tracker
 
-# Containment strategies and resembling patterns 
 
-Identification and codification of different measures undertaken by governments performed by University of Oxford results in 11 ordinal variables selected as lockdown policies. This sets up the necessity to analyze and to aggregate them in a synthetic way in order to find out whether specific combinations of those policies making up political strategies come out to have a resemblance pattern across countries.
-
-Therefore, we performed a Principal Component Analysis based on the polychoric correlation. It allows to estimate the correlation between two theorised normally distributed continuous latent variables, from two observed ordinal variables. It has no closed form but it is estimated via MLE assuming the two latent variables follows a bivariate normal density.
-
-The interpretation of the first three principal components (accounting for the 80\% of total variance) appears to be clear (see Figure \ref{figs}): the first one is closely related with freedom of movements and gathering restrictions together with information campaigns strategy, crucial in cases of draconian measures, the second one is related with the strategy of informing and testing the population, lastly the third one is related to informing and contact tracing the population. Summarizing, on one hand a first containment strategy aims at social distancing the entire population, on the other hand a second one aims at act locally and rapidly detect and isolate the positive cases, with two (alternative or complementary) tools: tracing contacts of infected and/or blanket population testing.
-
-```{r figs,  echo=FALSE, fig.cap="\\label{fig:figs}First 3 Principal Components Loadings."}
-
-peach=rainbow(3, start=0.08, end=0.17)
-gray=viridis(begin=0, end=0.5, 8,option = "D")
-ggplot(dpca, aes(x=PC, y=Loadings, fill=policies, group=position))+
- geom_bar(stat="identity", position="dodge")+
-  coord_flip()+scale_fill_manual("", breaks=c(apol, rpol), 
-                                 values=c(gray[1], peach[1], gray[2],                                           peach[2], gray[3:6], peach[3], gray[7:8]))
-
-```
-
-We want now to figure out which countries have adopted the undelined strategies and whether there is a strategies resemblance across countries, considering both the combination of measures undetaken and the timing w.r.t. the day of the first contagion detection on country soil.
-In order to do so, we performed a functional co-clustering of the first three principal components taking into account 20 countries in a specific time span (which varies from country to country) that depends on when the first covid cases has been detected on national soil. We perfomed an alignment of the contagion pattern from the 10th day before first contagion detection, in order to include also relevant information on the prevention measures.
-
-Considering a matrix of 20 countries (rows) of 3 curves (columns or functional features- restriction-based, testing-based and tracing-based policies) s.t. $x=(x_{ij}(t))_{1\leq i \leq 20; 1 \leq j\leq3}$ with $t \in [0,85]$, we reconstructed the functional form of the data from their discrete observations (85 days) by assuming that curves belong to a finite dimensional space spanned by a basis of functions and then we estimated a functional latent block model used for co-clustering. 
-
-The two policies clusters depicts Restriction-based policies on one hand, Tracing and Testing-based policies on the other hand, confirming that these last two policies reflects a common strategy as described above.
-
-The countries clusters are displayed in Figure \ref{figs2}: (South Korea, Singapore), (Germany, Sweden), (USA, Canada, Greece, Portugal), (Italy, Spain, Ireland, UK, Netherlands), (Norway, Denmark, Finland, France, Belgium, Switzerland, Austria). The interpretation can be grasped in Figure \ref{figs3}. South Korea and Singapore political strategy is characterized by the detection and isolation of the positive cases via contact tracing and mild testing policies, without any relevant social distancing action. On the contrary Germany, Sweden strategy was to detect and isolate positive cases via an extensive testing policy strategy, without any strong social distancing measures in order to protect the economy. A very different strategy has been adopted by the cluster including Italy, Spain, Ireland, UK and Netherlands, which acted with social distancing measures at different temporal stages (considering in particular the north european countries of the cluster) but promptly with respect to the first contagion inside national borders. In particular the strategies of Ireland, UK and Netherland was very strict concerning school and workplace closing as well as gathering and international movement restiction, weaker as regards stay at home recommendations, internal movement restriction and transport closing but at the same time relying on a strong information campaign. On the other hand, Italy and Spain sharpened up stay at home and internal movement restrictions. USA, Canada, Greece and Portugal has adopted intermittently social distancing measures in addition with strong social tracing during the second part of the considered period. Lastly, Norway, Denmark, Finland, France, Belgium, Switzerland, Austria has adopted intermediate social distancing measure, in line with other European countries, but without any relevant testing or tracing measure in addition. 
-```{r figs2, fig.align='center', echo=FALSE, fig.cap="\\label{fig:figs2}Clusters map.", eval = F}
-grid.arrange(na2, europe2,                  
-             arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
-             ncol = 3, nrow=1, widths=c(3,4,2)) 
-
-```
-
-
-```{r figs3, fig.align='center', echo=FALSE, fig.width = 8, fig.cap="\\label{fig:figs3}Clusters average functionals related to Social Distancing Restrinction, Testing and Tracing policies aligned at the day of the first contagion (vertical blue line)."}
-ggarrange(restrict, testt, trace, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
-
-```
-
-# Effect of policies from a global perspective 
-
-Some countries have underestimated the dangerousness of the Coronavirus disease 2019 (COVID-19) and the importance of applying the containment measures. The little concern of some countries regarding the COVID-19 infectious disease is due to many and different reasons. Some countries decided to save the economy instead of people's lives as a method of responding to war; in this case, a pandemic war.
-
-For that, we want to analyze which countries adopt the "optimal" policy measures to contain the contagion of COVID-19. Thanks to the @Oxford data sets, we know which actions each government took and when. The indicators of government response considered are $17$ in total, which can be resumed in indicators of a lockdown/social distancing measures, contact tracing measures, movement restrictions, testing policy, public health measures, and governance and socio-economic measures.
-
-In addition, some variables as the size of the population are considered from the [World Bank Open Data](https://data.worldbank.org/) to have some additional covariates that can influence the variation in government responses to COVID-19.
-
-We restrict the full range of responses to COVID-19 from governments around the countries analyzed in Section 3, i.e., Korea, Singapore, Germany, Canada, Sweden, Greece, Portugal, Spain, United States of America, Irland, United Kingdom, Italy, Netherlands, Austria, Switzerland, Finland, Norway, Denmark, and France.
-
-The daily number of active persons is analyzed as a measure of the COVID-19 situation, i.e., the number of confirmed minus the number of deaths minus the number of recovered. Being a count variable, we decide to use a Negative Binomial Regression, also correcting for the possible overdispersion. Therefore, the hierarchical structure is induced by the nested structure of countries inside the clusters and by the longitudinal structure. For that, we decide to use a generalized mixed model with family negative binomial. The countriea, clusters, and date's information are supposed to be used as random effects in the model. The indicators from @Oxford and the demographic/economic/health variables from the [World Bank Open Data](https://data.worldbank.org/) enter as fixed effect in the model.
-
-So, the aim is to understand how the lockdown policies influence the number of active people. The observations are aligned concerning the first active case across the countries to have observations directly comparable from a longitudinal point of view. The following Figure represents the number of active people during $131$ days for each countries, and the corresponding mean value of the clusters.
-
-```{r, echo = FALSE, comment = F, warning= F, silent = T , fig.cap="\\label{fig:figsA1} Number of active people over population across time for each countries. The mean of each cluster is also displayed."}
-path <- "~/GitHub/Lockdown_policies_COVID19/" 
-source(paste0(path, "Code/Angela/packages.R"))
-load(paste0(path, "Code/Silvia/cluster20paesi.Rdata"))
-load(paste0(path, "Code/Silvia/SAVEPLOTS.Rdata"))
-load(paste0(path, "Code/Angela/Data/out.RData"))
-load(paste0(path, "Code/Angela/Data/var.RData"))
-gd <- dat %>% 
-  group_by(Clusters, date2) %>% 
-  mutate(active_group = round(mean((active/pop)*1000),3) )
-
-gd <- gd %>% 
-  mutate(active_over_pop_1000 = round((active/pop)*1000,3))
-
-a <- ggplot(gd, aes(x = as.integer(date2), y = active_over_pop_1000)) +
-  geom_line(aes(group = id), alpha = .7) +
-  geom_smooth(aes(x = as.integer(date2), y =  active_group, color = Clusters),method = 'loess',formula = 'y ~ x',se = T,size = 1.5) +
-  theme_classic()  + ylab("Active/pop per 1000") + xlab("Days after first case") + xlim(0,max(as.integer(gd$date2)))
-#  +scale_x_date(date_labels = "%b %d")
-a <- ggplotly(a, tooltip = c("id", "active_over_pop_1000"))
-
-a$x$data[[1]]$name <- c(paste0(Cl1, collapse = " "))
-a$x$data[[2]]$name <- c(paste0(Cl2, collapse = " "))
-a$x$data[[3]]$name <- c(paste0(Cl3, collapse = " "))
-a$x$data[[4]]$name <- c(paste0(Cl4, collapse = " "))
-a$x$data[[5]]$name <- c(paste0(Cl5, collapse = " "))
-
-
-div(a %>% layout(legend = list(orientation = "h", y =-.2)), align = "center")
-```
-
-The temporal variability between countries and clusters is clear, as confirmation about the decision to use the generalized mixed model.
-
-## Exploratory Analysis {.tabset}
-
-The set of confounders considered in this analysis can be divided into three main areas:
+Lastly, a set of confounders variables has been considered in the analysis. These can be divided into three main areas:
 
   1. **Longitudinal economic** variables from @Oxford;
 
@@ -259,11 +73,21 @@ The set of confounders considered in this analysis can be divided into three mai
   3. **Fixed demographic/economic/health variables** from the [World Bank Open Data](https://data.worldbank.org/).
   
   
-### Longitudinal economic Variables
+## Longitudinal economic Variables
 
 We analyze four economic variables from @Oxford:
 
 ```{r, echo = FALSE, comment = F, warning= F, silent = T}
+#path <- "~/GitHub/Lockdown_policies_COVID19/" 
+path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
+
+source(paste0(path, "Code/Angela/packages.R"))
+load(paste0(path, "Code/Silvia/cluster20paesi.Rdata"))
+load(paste0(path, "Code/Silvia/SAVEPLOTS.Rdata"))
+load(paste0(path, "Code/Angela/Data/out.RData"))
+path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
+load(paste0(path, "Code/Angela/Data/var.RData"))
+
 tab_EC <- data.frame(Name = c("Income Support", "Debt/contract relief for households", "Fiscal measures", "International support"), Measurement = c("Ordinal", "Ordinal", "USD", "USD"), Description = c("Government income support to people that lose their jobs", "Government policies imposed to freeze financial obligations", "Economic fiscal stimuli", "monetary value spending to other countries"), Category = c("0 - no income support; 1 - government is replacing less than 50% of lost salary, 2 - government is replacing more than 50% of lost salary", "0 - No; 1 - Narrow relief, specific to one kind of contract; 2 - broad debt/contract relief", "", ""))
 knitr::kable(tab_EC)
 ```
@@ -338,7 +162,7 @@ The fiscal measure and international support variables have a large within-clust
 
 For further details about the definition of the economic variables, please see the [BSG Working Paper Series](https://www.bsg.ox.ac.uk/sites/default/files/2020-05/BSG-WP-2020-032-v5.0_0.pdf).
 
-### Demographic/economic/health system fixed variables
+## Demographic/economic/health system fixed variables
 
 We analyze $8$ variables from the [World Bank Open Data](https://data.worldbank.org/) that are fixed along the temporal dimension:
 
@@ -404,7 +228,7 @@ div(subplot(p1,p2, shareY = FALSE,titleY = T), align = "center")
 
 Another time the Singapore situation is clear analyzing the first Cluster. We have a large density population, so lower surface area than the ones of the other countries.
 
-### Longitudinal health system variables
+## Longitudinal health system variables
 
 We analyze $2$ health systems' variables from @Oxford:
 
@@ -429,6 +253,96 @@ p2 <- a %>% layout(legend = list(orientation = "h", y =-.8))
 div(p2, align = "center")
 ```
 
+# Containment strategies and resembling patterns 
+
+Identification and codification of different measures undertaken by governments performed by University of Oxford results in 11 ordinal variables selected as lockdown policies. This sets up the necessity to analyze and to aggregate them in a synthetic way in order to find out whether specific combinations of those policies making up political strategies come out to have a resemblance pattern across countries.
+
+Therefore, we performed a Principal Component Analysis based on the polychoric correlation. It allows to estimate the correlation between two theorised normally distributed continuous latent variables, from two observed ordinal variables. It has no closed form but it is estimated via MLE assuming the two latent variables follows a bivariate normal density.
+
+The interpretation of the first three principal components (accounting for the 80\% of total variance) appears to be clear (see Figure \ref{figs}): the first one is closely related with freedom of movements and gathering restrictions together with information campaigns strategy, crucial in cases of draconian measures, the second one is related with the strategy of informing and testing the population, lastly the third one is related to informing and contact tracing the population. Summarizing, on one hand a first containment strategy aims at social distancing the entire population, on the other hand a second one aims at act locally and rapidly detect and isolate the positive cases, with two (alternative or complementary) tools: tracing contacts of infected and/or blanket population testing.
+
+```{r figs,  echo=FALSE, fig.cap="\\label{fig:figs}First 3 Principal Components Loadings."}
+load(paste0(path, "Code/Silvia/cluster20paesi.Rdata"))
+load(paste0(path, "Code/Silvia/SAVEPLOTS.Rdata"))
+
+peach=rainbow(3, start=0.08, end=0.17)
+gray=viridis(begin=0, end=0.5, 8,option = "D")
+ggplot(dpca, aes(x=PC, y=Loadings, fill=policies, group=position))+
+ geom_bar(stat="identity", position="dodge")+
+  coord_flip()+scale_fill_manual("", breaks=c(apol, rpol), 
+                                 values=c(gray[1], peach[1], gray[2],                                           peach[2], gray[3:6], peach[3], gray[7:8]))
+
+```
+
+We want now to figure out which countries have adopted the undelined strategies and whether there is a strategies resemblance across countries, considering both the combination of measures undetaken and the timing w.r.t. the day of the first contagion detection on country soil.
+In order to do so, we performed a functional co-clustering of the first three principal components taking into account 20 countries in a specific time span (which varies from country to country) that depends on when the first covid cases has been detected on national soil. We perfomed an alignment of the contagion pattern from the 10th day before first contagion detection, in order to include also relevant information on the prevention measures.
+
+Considering a matrix of 20 countries (rows) of 3 curves (columns or functional features- restriction-based, testing-based and tracing-based policies) s.t. $x=(x_{ij}(t))_{1\leq i \leq 20; 1 \leq j\leq3}$ with $t \in [0,85]$, we reconstructed the functional form of the data from their discrete observations (85 days) by assuming that curves belong to a finite dimensional space spanned by a basis of functions and then we estimated a functional latent block model used for co-clustering with the \texttt{funFEM} R package developed by @funfem. 
+
+The two policies clusters depicts Restriction-based policies on one hand, Tracing and Testing-based policies on the other hand, confirming that these last two policies reflects a common strategy as described above.
+
+The countries clusters are displayed in Figure \ref{figs2}: (South Korea, Singapore), (Germany, Sweden), (USA, Canada, Greece, Portugal), (Italy, Spain, Ireland, UK, Netherlands), (Norway, Denmark, Finland, France, Belgium, Switzerland, Austria). The interpretation can be grasped in Figure \ref{figs3}. South Korea and Singapore political strategy is characterized by the detection and isolation of the positive cases via contact tracing and mild testing policies, without any relevant social distancing action. On the contrary Germany, Sweden strategy was to detect and isolate positive cases via an extensive testing policy strategy, without any strong social distancing measures in order to protect the economy. A very different strategy has been adopted by the cluster including Italy, Spain, Ireland, UK and Netherlands, which acted with social distancing measures at different temporal stages (considering in particular the north european countries of the cluster) but promptly with respect to the first contagion inside national borders. In particular the strategies of Ireland, UK and Netherland was very strict concerning school and workplace closing as well as gathering and international movement restiction, weaker as regards stay at home recommendations, internal movement restriction and transport closing but at the same time relying on a strong information campaign. On the other hand, Italy and Spain sharpened up stay at home and internal movement restrictions. USA, Canada, Greece and Portugal has adopted intermittently social distancing measures in addition with strong social tracing during the second part of the considered period. Lastly, Norway, Denmark, Finland, France, Belgium, Switzerland, Austria has adopted intermediate social distancing measure, in line with other European countries, but without any relevant testing or tracing measure in addition. 
+```{r figs2, fig.align='center', echo=FALSE, fig.cap="\\label{fig:figs2}Clusters map.", eval = F}
+grid.arrange(na2, europe2,                  
+             arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
+             ncol = 3, nrow=1, widths=c(3,4,2)) 
+
+```
+
+
+```{r figs3, fig.align='center', echo=FALSE, fig.width = 8, fig.cap="\\label{fig:figs3}Clusters average functionals related to Social Distancing Restrinction, Testing and Tracing policies aligned at the day of the first contagion (vertical blue line)."}
+ggarrange(restrict, testt, trace, ncol=3, nrow=1, common.legend = TRUE, legend="bottom")
+
+```
+
+
+# Effect of policies from a global perspective 
+
+<!-- Some countries have underestimated the dangerousness of the Coronavirus disease 2019 (COVID-19) and the importance of applying the containment measures. The little concern of some countries regarding the COVID-19 infectious disease is due to many and different reasons. Some countries decided to save the economy instead of people's lives as a method of responding to war; in this case, a pandemic war. Thanks to the @Oxford data sets, we know which actions each government took and when. The indicators of government response considered are $17$ in total, which can be resumed in indicators of a lockdown/social distancing measures, contact tracing measures, movement restrictions, testing policy, public health measures, and governance and socio-economic measures.--> 
+
+In order to analyze which countries adopt the "optimal" policy measures to contain the contagion of COVID-19, we restrict the full range of responses to COVID-19 from governments around the countries analyzed in Section 3, i.e., Korea, Singapore, Germany, Canada, Sweden, Greece, Portugal, Spain, United States of America, Irland, United Kingdom, Italy, Netherlands, Austria, Switzerland, Finland, Norway, Denmark, and France.
+
+The daily number of active persons is analyzed as a measure of the COVID-19 situation, i.e., the number of confirmed minus the number of deaths minus the number of recovered. Being a count variable, we decide to use a Negative Binomial Regression, also correcting for the possible overdispersion. Therefore, the hierarchical structure is induced by the nested structure of countries inside the clusters and by the longitudinal structure. For that, we decide to use a generalized mixed model with family negative binomial. The countries, clusters, and date's information are supposed to be used as random effects in the model. The indicators from @Oxford and the demographic/economic/health variables from the [World Bank Open Data](https://data.worldbank.org/) enter as fixed effect in the model.
+
+So, the aim is to understand how the lockdown policies influence the number of active people. The observations are aligned concerning the first active case across the countries to have observations directly comparable from a longitudinal point of view. The following Figure represents the number of active people during $131$ days for each countries, and the corresponding mean value of the clusters.
+
+```{r, echo = FALSE, comment = F, warning= F, silent = T , fig.cap="\\label{fig:figsA1} Number of active people over population across time for each countries. The mean of each cluster is also displayed."}
+#path <- "~/GitHub/Lockdown_policies_COVID19/" 
+path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
+
+source(paste0(path, "Code/Angela/packages.R"))
+load(paste0(path, "Code/Silvia/cluster20paesi.Rdata"))
+load(paste0(path, "Code/Silvia/SAVEPLOTS.Rdata"))
+load(paste0(path, "Code/Angela/Data/out.RData"))
+path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
+load(paste0(path, "Code/Angela/Data/var.RData"))
+gd <- dat %>% 
+  group_by(Clusters, date2) %>% 
+  mutate(active_group = round(mean((active/pop)*1000),3) )
+
+gd <- gd %>% 
+  mutate(active_over_pop_1000 = round((active/pop)*1000,3))
+
+a <- ggplot(gd, aes(x = as.integer(date2), y = active_over_pop_1000)) +
+  geom_line(aes(group = id), alpha = .7) +
+  geom_smooth(aes(x = as.integer(date2), y =  active_group, color = Clusters),method = 'loess',formula = 'y ~ x',se = T,size = 1.5) +
+  theme_classic()  + ylab("Active/pop per 1000") + xlab("Days after first case") + xlim(0,max(as.integer(gd$date2)))
+#  +scale_x_date(date_labels = "%b %d")
+a <- ggplotly(a, tooltip = c("id", "active_over_pop_1000"))
+
+a$x$data[[1]]$name <- c(paste0(Cl1, collapse = " "))
+a$x$data[[2]]$name <- c(paste0(Cl2, collapse = " "))
+a$x$data[[3]]$name <- c(paste0(Cl3, collapse = " "))
+a$x$data[[4]]$name <- c(paste0(Cl4, collapse = " "))
+a$x$data[[5]]$name <- c(paste0(Cl5, collapse = " "))
+
+
+div(a %>% layout(legend = list(orientation = "h", y =-.2)), align = "center")
+```
+
+The temporal variability between countries and clusters is clear, as confirmation about the decision to use the generalized mixed model.
+
+
 ## Model {.tabset}
 
 The aim is to model the number of active people, i.e., confirmed - deaths - recovered, after $14$ days, when the lockdown policies were applied. Therefore, the number of **active people lagged** to $t+14$ days, and an **offset term** representing the number of active people at time $t$ are considered to analyze the influences of the restrictions imposed at time $t$ on the number of active at time $t+14$.
@@ -449,7 +363,7 @@ $$
 
 Therefore, the $40.15\%$ of the data's variance is given by the random effect of the countries, while the $9.36\%$ by the temporal effect and $9.51\%$ by the clusters effect. Therefore, the mixed model requires a random effect for the countries; the other two effects is selected using the conditional AIC.
 
-The dependent variable is the number of active persons; therefore, a count data model is considered. To control the overdispersion of our data, the negative binomial regression with Gaussian-distributed random effects is performed using the glmmTMB R package developed by @glmmTMB. Let $n$ countries, and country $i$ is measured at $n_i$ time points $t_{ij}$. The active person $y_{ij}$ count at time $t+14$, where $i=1,\dots, n$ and $j = 1, \dots,n_i$, follows the negative binomial distribution:
+The dependent variable is the number of active persons; therefore, a count data model is considered. To control the overdispersion of our data, the negative binomial regression with Gaussian-distributed random effects is performed using the \texttt{glmmTMB} R package developed by @glmmTMB. Let $n$ countries, and country $i$ is measured at $n_i$ time points $t_{ij}$. The active person $y_{ij}$ count at time $t+14$, where $i=1,\dots, n$ and $j = 1, \dots,n_i$, follows the negative binomial distribution:
 
 $$y_{ij} \sim NB(y_{ij}|\mu_{ij}, \theta) = \dfrac{\Gamma(y_{ij}+ \theta)}{\Gamma(\theta) y_{ij}!} \cdot \Big(\dfrac{\theta}{\mu_{ij} + \theta}\Big)^{\theta}\cdot \Big(\dfrac{\mu_{ij}}{\mu_{ij} + \theta}\Big)^{y_{ij}}$$
 where $\theta$ is the dispersion parameter that controls the amount of overdispersion, and $\mu_{ij}$ are the means. The means $\mu_{ij}$ are related to the other variables via the logarithm link function:
@@ -584,7 +498,9 @@ These two policies lead to an increase in the number of active people recorded.
 The following plot represents the effects of the clusters on predicted actives after $14$ respect to the cluster associated with Italy.
 
 ```{r echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center"}
+path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
 load(paste0(path, "Code/Angela/Data/plot_mapAngela.RData"))
+
 grid.arrange(na2, europe2,                 
              arrangeGrob(kor2, sin2, nrow = 2, ncol=1),
              ncol = 3, nrow=1, widths=c(3,4,2))    
@@ -604,7 +520,9 @@ In this Section, the effects of the interaction between each significant lockdow
 #### Testing policies
 
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T}
-path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
+#path <- "~/GitHub/Lockdown_policies_COVID19/" #Insert your path
+path <- "/Users/siviadenicolo/Documents/GitHub/Lockdown_policies_COVID19/" 
+
 load(paste0(path, "Code/Angela/Data/plot_mod.RData"))
 
 a <- ggplotly(pTest, tooltip = c("colour", "y")) %>% layout(showlegend = FALSE, title = "")
@@ -703,12 +621,12 @@ In this Section, the countries' effects on the number of active people are analy
 The effects are computed considering $100$ and $1000$ active people at time $t$, when the policies are applied. The other covariates are fixed and equal to the mean value.
 
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center",fig.width=10}
-path <- "~/GitHub/Lockdown_policies_COVID19/"
+#path <- "~/GitHub/Lockdown_policies_COVID19/"
 load(paste0(path, "Code/Angela/Data/plot_ranef.RData"))
 pNL
 ```
 
-If the government doesn't impose any measure to contrast the coronavirus, the number of active people after $14$ will increase, in particular in the fourth cluster, i.e., Spain, Italy, Irland, United Kingdom, and the Netherlands. The situation gets worst if the number of active people at time $t$ is large.
+If the government doesn't impose any measure to contrast the coronavirus, the number of active people after $14$ days will increase, in particular in the fourth cluster, i.e., Spain, Italy, Irland, United Kingdom, and the Netherlands. The situation gets worst if the number of active people at time $t$ is large.
 
 ```{r, echo=FALSE, warning = FALSE, comment = FALSE, silent = T, fig.align="center",fig.width=10}
 pALL
