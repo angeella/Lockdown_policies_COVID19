@@ -451,7 +451,7 @@ quiet(ggplot(OUT, aes(Policies, predicted, fill = Strength)) +
   theme_minimal() + ylab(""), all = TRUE) 
 ```
 
-We can note that in general, the strong lockdown policies work with respect to impose no measure. For example, if the government prohibits most citizens from using it, the number of active people diminishes around  $39.4\%$ respect to imposing no public transport measures. Also, we can note that weak gatherings restrictions still work concerning impose no action. For example, restrictions on gatherings between 100-1000 people diminish the number of active persons around $71.62\%$. However, we can see a reverse situation analyzing the effects regarding the variables describing the testing and tracing policies. Probably, strong testing and tracing policies lead to discovering more infected people.
+We can note that in general, the strong lockdown policies work with respect to impose no measure. For example, if the government prohibits most citizens from using it, the number of active people diminishes around  $39.4\%$ with respect to imposing no public transport measures. Also, we can note that weak gatherings restrictions still work concerning impose no action. For example, restrictions on gatherings between 100-1000 people diminish the number of active persons around $71.62\%$. However, we can see a reverse situation analyzing the effects regarding the variables describing the testing and tracing policies. Probably, strong testing and tracing policies lead to discovering more infected people.
 
 The following plot represents the effects of two policies, i.e., workplace closing and gatherings restriction, on predicted active people $14$ days after applying these policies.
 
@@ -646,7 +646,7 @@ i.e., the governements apply the strong levels of all lockdown policies, in this
 
 ## To sum up
 
- 1. Lockdown policies work! respect to impose no measure in general;
+ 1. Lockdown policies work with respect to impose no measure in general;
  
  2. Weak gatherings restrictions still work, i.e., restrictions on gatherings between 100-1000 people;
  
@@ -662,6 +662,6 @@ i.e., the governements apply the strong levels of all lockdown policies, in this
 
 # Supplementary materials
 
-All the codes used for this analysis is available on [Github](https://github.com/angeella/Lockdown_policies_COVID19). The report was written by rmarkdown, fully reproducible. You can find the rmakrdown file in [Github](https://github.com/angeella/Lockdown_policies_COVID19/Report).
+All the codes used for this analysis are available on [Github](https://github.com/angeella/Lockdown_policies_COVID19). The report was written by rmarkdown, fully reproducible. You can find the rmarkdown file in [Github](https://github.com/angeella/Lockdown_policies_COVID19/Report).
 
 # References
