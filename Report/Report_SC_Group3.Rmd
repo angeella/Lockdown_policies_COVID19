@@ -337,7 +337,7 @@ div(a %>% layout(legend = list(orientation = "h", y =-.2)), align = "center")
 The temporal variability between countries and clusters is clear, as confirmation about the decision to use the generalized mixed model.
 
 
-## Model {.tabset}
+## Model 
 
 The aim is to model the number of active people, i.e., confirmed - deaths - recovered, after $14$ days, when the lockdown policies were applied. Therefore, the number of **active people lagged** to $t+14$ days, and an **offset term** representing the number of active people at time $t$ are considered to analyze the influences of the restrictions imposed at time $t$ on the number of active at time $t+14$.
 
@@ -398,7 +398,11 @@ We drop off the random effect associated with the Clusters having low variabilit
 
 The marginal $R^2$, i.e., the variance explained by the fixed effects, equals $0.28$, while the conditional one, i.e., the variance explained by the entire model, including both fixed and random effects, equals $0.89$ considering the lognormal approximation @Nakagawa. 
 
-Therefore, the model seems correctly formulated. We will analyze the effects related to the following variables:
+Therefore, the model seems correctly formulated. 
+
+## Results {.tabset}
+
+We will analyze the effects related to the following variables:
 
 1. The fixed effect of the lockdown policies;
 
