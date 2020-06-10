@@ -239,3 +239,13 @@ Irregularities in the trend that catch one's attention may be, primarily:
 * overall good behavior of Umbria and Valle d'Aosta, worsening quite abruptly and steadily ever after some point in Trentino.
 
 The estimated trend in Phase Zero is just too unstable to deserve reporting here. One must consider though that, compatibly with the results from previous sections on countries data, the epidemic was unquestionably out of control before the lockdown, and that the epidemics is still on the verge of booming again across Italy even under Phase One-like measures. This mandates for cautious and restrictive approaches from every region.
+
+## To sum up
+
+1. The epidemic curve is currently under control in all Italian regions.
+
+2. The case of economic and political hubs, Lombardia and Lazio, is just peculiar, with slow recovery and worst baseline conditions. In all other regions, the epidemic is expected to end soon.
+
+4. Lombardia and Lazio might have to wait at least one year before the active cases fall far below the hundreds units. The other regions could drive the economic recovery in the meantime.
+
+3. The margin of action to de-escalate lockdown policies, though, is limited. The example provided by Korea and Singapore on contact tracing and testing might be followed closely, after the successes highlighted in the previous sections.
