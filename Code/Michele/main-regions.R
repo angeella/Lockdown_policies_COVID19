@@ -59,6 +59,17 @@ map <- get.maps(dat) # loads maps
 
 save(map, file="out/maps.RData") # saves maps for markdown
 
+map2 <- map %>%
+  st_as_sf() %>%
+  as_Spatial()
+map2 <- sp::SpatialPolygonsDataFrame(
+  rgeos::gSimplify(map2, tol = 0.1, topologyPreserve = TRUE),
+  map2@data
+) %>%
+  st_as_sf()
+
+save(map2, file="out/maps2.RData")
+
 dat <- dat %>%
   filter(country=="Italy" & region!="country") # considering just Italian regions here
 

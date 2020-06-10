@@ -64,9 +64,11 @@ require(sf, quietly = T)
 require(sfheaders)
 require(rnaturalearth, quietly = T)
 require(rnaturalearthdata, quietly = T)
+require(rgeos, quietly=T)
 load(paste0(path, "Code/Michele/out/regions.RData"))
-load(paste0(path, "Code/Michele/out/maps.RData"))
-map <- map %>% filter(country=="Italy")
+load(paste0(path, "Code/Michele/out/maps2.RData"))
+map2 <- map2 %>%
+  filter(country=="Italy")
 cutpoint <- c("2020-03-22", "2020-05-13")
 
 npaz <- 30
@@ -81,7 +83,7 @@ dat <- dat %>%
 
 last <- dat %>%
    filter(date==max(date)) %>%
-   left_join(map, by="region") %>%
+   left_join(map2, by="region") %>%
    st_as_sf()
 ```
 
@@ -194,11 +196,12 @@ We just focus on the rate of recovery, while remembering of the anomaly represen
 #  - attr(*, "sf_column")= chr "geometry"
 #  - attr(*, "relation_to_geometry")= Factor w/ 3 levels "field","lattice",..: NA NA NA NA NA NA NA NA NA NA ...
 #   ..- attr(*, "names")= chr  "geo_id" "fips_state" "name" "lsad" ...
+aux <- last %>%
+  mutate(value=(ratepoint-1)*100) %>%
+  st_as_sf()
+
 ggplotly(
-   last %>%
-      mutate(value=(ratepoint-1)*100) %>%
-      as_Spatial() %>%
-      st_as_sf() %>%
+   aux %>%
       ggplot() +
       geom_sf(aes(fill=value, group=region), color="black", lwd=0.5) +
       scale_fill_gradientn(colors = c("white", "darkblue"), labels = function(x) paste0(ifelse(x<0,"","+"), x, "%")) +
