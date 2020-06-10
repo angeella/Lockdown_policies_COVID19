@@ -29,7 +29,7 @@ path <- "/home/michele/Grive/Archivio/Dottorato/Corsi/Statistical Consulting/Ass
 
 # Italian lockdown and regional outcomes
 
-In the previous sections, the effect of lockdown policies on the spreadth of contagion was estimated for each country, but data is available for some countries at regional level too. The aim in this section is to check for differences among **Italian regions**. Such an analysis is important for our Phase Two, as governors will have more power in tayloring lockdown measures down to their regions' needs.
+In the previous sections, the effect of lockdown policies on the spread of contagion was estimated for each country, but data is available for some countries at regional level too. The aim in this section is to check for differences among **Italian regions**. Such an analysis is important for our Phase Two, as governors will have more power in tayloring lockdown measures down to their regions' needs.
 
 Data is still available from the same sources as before. The effect of different **policies** has already been estimated, while now **only their aggregate effect** can be assessed. Indeed the countermeasures for COVID19 escalated almost simultaneously all over the country (excepted the Red Zone, but only for few days) and on all sides (as to offices, schools, transit, etc). So in this analysis, all different policies are replaced by a single factor, which is the Phase: Zero, One. As to the newer Phase Two, too few days of data are available, so it will be discarded.
 
